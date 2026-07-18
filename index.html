@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Museu de Fields of Mistria — Checklist</title>
+<style>
+  :root{
+    --bg:#1e1b2e; --card:#2a2540; --accent:#e8b86d; --accent2:#8fd3a3;
+    --text:#f1ecf9; --muted:#b3a9c9; --border:#3d3660;
+    --c-common:#7fce9a; --c-uncommon:#7ea8e0; --c-rare:#b48ef0; --c-legendary:#f0b94e; --c-veryrare:#f07a7a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text);
+    padding:12px; max-width:900px; margin:0 auto; padding-bottom:60px;
+  }
+  h1{font-size:1.25rem; margin:6px 0 2px 0}
+  .sub{color:var(--muted); font-size:0.8rem; margin-bottom:12px}
+  .sticky-top{position:sticky; top:0; background:var(--bg); z-index:10; padding-top:4px; padding-bottom:4px}
+  .tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
+  .tab{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:9px 14px; border-radius:20px; cursor:pointer; font-size:0.82rem; font-weight:600;
+    min-height:36px; display:flex; align-items:center;
+  }
+  .tab.active{background:var(--accent); color:#2a2340; border-color:var(--accent)}
+  .filter-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; align-items:center}
+  .chip-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:7px 12px; border-radius:16px; cursor:pointer; font-size:0.78rem; font-weight:600;
+    min-height:34px; display:flex; align-items:center; gap:4px;
+  }
+  .chip-btn.active{background:var(--accent2); color:#16301f; border-color:var(--accent2)}
+  .toggle-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:7px 12px; border-radius:16px; cursor:pointer; font-size:0.78rem; font-weight:600;
+    min-height:34px; display:flex; align-items:center; gap:6px;
+  }
+  .toggle-btn.on{background:#e08fa0; color:#2a1420; border-color:#e08fa0}
+  .header-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .lang-switch{display:flex; gap:4px; flex-shrink:0; margin-top:4px}
+  .lang-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--muted);
+    padding:5px 9px; border-radius:8px; cursor:pointer; font-size:0.7rem; font-weight:700;
+  }
+  .lang-btn.active{background:var(--accent); color:#2a2340; border-color:var(--accent)}
+  .storage-warning{
+    background:#4a2a2a; border:1px solid #a05050; color:#f2c8c8; border-radius:10px;
+    padding:10px 14px; margin-bottom:10px; font-size:0.8rem; display:none;
+  }
+  .storage-warning.show{display:block}
+  .storage-warning b{color:#ffdede}
+  .storage-warning.info{background:#213a4a; border:1px solid #4f88a8; color:#c9e6f5}
+  .storage-warning.info b{color:#eaf7ff}
+  .search-box{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); margin-bottom:8px; font-size:0.95rem;
+  }
+  .progress-wrap{background:var(--card); border-radius:10px; padding:10px 14px; margin-bottom:10px; border:1px solid var(--border)}
+  .progress-bar-bg{background:#171428; border-radius:6px; height:10px; overflow:hidden; margin-top:6px}
+  .progress-bar-fill{background:linear-gradient(90deg,var(--accent2),var(--accent)); height:100%; width:0%; transition:width .3s}
+  .cat-stats{display:flex; flex-direction:column; gap:6px; margin-bottom:4px}
+  .cat-stat-row{display:flex; align-items:center; gap:8px; font-size:0.78rem}
+  .cat-stat-name{width:90px; flex-shrink:0; color:var(--muted)}
+  .cat-stat-bar-bg{flex:1; background:#171428; border-radius:5px; height:8px; overflow:hidden}
+  .cat-stat-bar-fill{height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .cat-stat-pct{width:38px; text-align:right; color:var(--muted)}
+
+  .objectives{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:10px}
+  .objectives h3{margin:0 0 6px 0; font-size:0.9rem}
+  .obj-list{list-style:none; padding:0; margin:0}
+  .obj-list li{display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.85rem; border-top:1px solid var(--border)}
+  .obj-list li:first-child{border-top:none}
+  .obj-list button{background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem}
+  .obj-input-row{display:flex; gap:6px; margin-top:6px}
+  .obj-input-row input{flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); background:#171428; color:var(--text)}
+  .obj-input-row button{padding:8px 12px; border-radius:6px; border:none; background:var(--accent); color:#2a2340; font-weight:700; cursor:pointer}
+
+  .set-card{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    margin-bottom:10px; overflow:hidden;
+  }
+  .set-card.complete{border-color:var(--accent2)}
+  .set-header{
+    padding:12px 14px; display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer; font-weight:700; font-size:0.92rem; min-height:44px;
+  }
+  .set-header.complete-bg{background:rgba(143,211,163,0.15)}
+  .set-header .count{color:var(--muted); font-weight:400; font-size:0.78rem}
+  .complete-badge{color:var(--accent2); font-size:0.75rem; font-weight:700; margin-left:6px}
+  .set-body{padding:0 12px 10px 12px; display:none}
+  .set-body.open{display:block}
+  .item-row{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 2px; border-top:1px solid var(--border);
+    font-size:0.87rem;
+  }
+  .item-row:first-child{border-top:none}
+  .item-row input[type=checkbox]{width:24px; height:24px; flex-shrink:0; accent-color:var(--accent2); margin-top:2px}
+  .item-main{flex:1; min-width:0}
+  .item-top-line{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+  .item-name{font-weight:700}
+  .item-name.done{text-decoration:line-through; color:var(--muted)}
+  .fav-btn{background:none; border:none; cursor:pointer; font-size:1.05rem; padding:2px 4px; flex-shrink:0}
+  .chips{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px}
+  .chip{
+    font-size:0.7rem; padding:2px 8px; border-radius:10px; background:#171428; color:var(--muted);
+    display:inline-flex; align-items:center; gap:3px; white-space:nowrap;
+  }
+  .badge-rarity{font-weight:700; color:#16150f}
+  .badge-common{background:var(--c-common)}
+  .badge-uncommon{background:var(--c-uncommon)}
+  .badge-rare{background:var(--c-rare)}
+  .badge-legendary{background:var(--c-legendary)}
+  .badge-veryrare{background:var(--c-veryrare)}
+  .item-actions{display:flex; gap:8px; margin-top:6px; align-items:center}
+  .wiki-link{font-size:0.72rem; color:var(--accent); text-decoration:none; border:1px solid var(--border); padding:3px 8px; border-radius:8px}
+  .add-obj-btn{font-size:0.72rem; color:var(--accent2); background:none; border:1px solid var(--border); padding:3px 8px; border-radius:8px; cursor:pointer}
+  .note-input{
+    width:100%; margin-top:6px; padding:6px 8px; font-size:0.78rem; border-radius:6px;
+    border:1px solid var(--border); background:#171428; color:var(--text);
+  }
+  .note{color:var(--muted); font-size:0.78rem; margin-top:2px; font-style:italic}
+  .empty-msg{color:var(--muted); font-size:0.85rem; text-align:center; padding:20px 0}
+  .export-row{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap}
+  .export-row button, .export-row label{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:8px 12px; border-radius:8px; cursor:pointer; font-size:0.78rem; font-weight:600;
+  }
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="header-row">
+  <div>
+    <h1 id="app-title">🏛️ Museu de Fields of Mistria</h1>
+    <div class="sub" id="app-subtitle">Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.</div>
+  </div>
+  <div class="lang-switch" id="lang-switch">
+    <div class="lang-btn" data-lang="en">EN</div>
+    <div class="lang-btn" data-lang="pt">PT</div>
+    <div class="lang-btn" data-lang="half">Half</div>
+  </div>
+</div>
+
+<div class="storage-warning" id="storage-warning"></div>
+
+<div class="objectives" id="objectives-panel"></div>
+
+<div class="progress-wrap">
+  <div style="display:flex;justify-content:space-between;font-size:0.85rem">
+    <span id="progress-label">Progresso geral</span>
+    <span id="progress-count">0 / 0</span>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="cat-stats" id="cat-stats" style="margin-top:10px"></div>
+</div>
+
+<div class="export-row">
+  <button id="btn-export">⬇️ Exportar progresso</button>
+  <label for="import-file">⬆️ Importar progresso</label>
+  <input type="file" id="import-file" accept=".json">
+</div>
+
+<div class="sticky-top">
+  <div class="tabs" id="tabs"></div>
+  <input class="search-box" id="search" placeholder="🔍 Buscar item, local, clima, estação, raridade...">
+  <div class="filter-row" id="season-filters"></div>
+  <div class="filter-row">
+    <div class="toggle-btn" id="toggle-pending">☐ Só pendentes</div>
+    <div class="toggle-btn" id="toggle-favs">☆ Só favoritos</div>
+  </div>
+</div>
+
+<div id="content"></div>
+
+<script>
+const SEASON_LABEL = {sp:'🌸 Primavera', su:'☀️ Verão', fa:'🍂 Outono', wi:'❄️ Inverno', all:'🔄 Todas'};
+const SEASON_LABEL_EN = {sp:'🌸 Spring', su:'☀️ Summer', fa:'🍂 Fall', wi:'❄️ Winter', all:'🔄 All'};
+const SEASON_ORDER = ['all','sp','su','fa','wi'];
+
+// ============ LANGUAGE SYSTEM (adds EN and full-PT modes; "half" = original unchanged) ============
+let lang = 'half'; // 'half' | 'pt' | 'en'
+
+const UI_TEXT = {
+  title: {half:"🏛️ Museu de Fields of Mistria", pt:"🏛️ Museu de Fields of Mistria", en:"🏛️ Fields of Mistria Museum"},
+  subtitle: {half:"Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.", pt:"Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.", en:"Donation checklist — check off, filter, favorite and take notes. Everything saves automatically."},
+  objectivesTitle: {half:"🎯 Objetivos de Hoje", pt:"🎯 Objetivos de Hoje", en:"🎯 Today's Objectives"},
+  objectivesEmpty: {half:"Nenhum objetivo ainda. Adicione abaixo ou clique em ➕ em um item.", pt:"Nenhum objetivo ainda. Adicione abaixo ou clique em ➕ em um item.", en:"No objectives yet. Add one below or click ➕ on an item."},
+  objInputPlaceholder: {half:"Novo objetivo...", pt:"Novo objetivo...", en:"New objective..."},
+  addBtn: {half:"Adicionar", pt:"Adicionar", en:"Add"},
+  progressLabel: {half:"Progresso geral", pt:"Progresso geral", en:"Overall progress"},
+  exportBtn: {half:"⬇️ Exportar progresso", pt:"⬇️ Exportar progresso", en:"⬇️ Export progress"},
+  importBtn: {half:"⬆️ Importar progresso", pt:"⬆️ Importar progresso", en:"⬆️ Import progress"},
+  searchPlaceholder: {half:"🔍 Buscar item, local, clima, estação, raridade...", pt:"🔍 Buscar item, local, clima, estação, raridade...", en:"🔍 Search item, location, weather, season, rarity..."},
+  togglePending: {half:"Só pendentes", pt:"Só pendentes", en:"Pending only"},
+  toggleFavs: {half:"Só favoritos", pt:"Só favoritos", en:"Favorites only"},
+  completeBadge: {half:"✔ Completo", pt:"✔ Completo", en:"✔ Complete"},
+  noItemsYet: {half:"Sem itens cadastrados ainda.", pt:"Sem itens cadastrados ainda.", en:"No items registered yet."},
+  noResults: {half:"Nenhum item encontrado com esses filtros. 🔎", pt:"Nenhum item encontrado com esses filtros. 🔎", en:"No items found with these filters. 🔎"},
+  notePlaceholder: {half:"📝 Anotação (opcional)...", pt:"📝 Anotação (opcional)...", en:"📝 Note (optional)..."},
+  wikiLink: {half:"🔗 Wiki", pt:"🔗 Wiki", en:"🔗 Wiki"},
+  addObjBtn: {half:"➕ Objetivo", pt:"➕ Objetivo", en:"➕ Objective"},
+  donatePrefix: {half:"Doar: ", pt:"Doar: ", en:"Donate: "},
+  importSuccess: {half:"Progresso importado com sucesso!", pt:"Progresso importado com sucesso!", en:"Progress imported successfully!"},
+  importError: {half:"Erro ao importar arquivo. Verifique se é um JSON válido exportado por esta ferramenta.", pt:"Erro ao importar arquivo. Verifique se é um JSON válido exportado por esta ferramenta.", en:"Error importing file. Make sure it's a valid JSON file exported by this tool."},
+  storageBrokenMsg: {half:"⚠️ <b>Salvamento automático indisponível</b> aqui (nem a nuvem do app, nem o armazenamento do navegador funcionaram). Use <b>⬇️ Exportar progresso</b> antes de sair e <b>⬆️ Importar progresso</b> quando voltar.", pt:"⚠️ <b>Salvamento automático indisponível</b> aqui (nem a nuvem do app, nem o armazenamento do navegador funcionaram). Use <b>⬇️ Exportar progresso</b> antes de sair e <b>⬆️ Importar progresso</b> quando voltar.", en:"⚠️ <b>Autosave unavailable</b> here (neither the app's cloud storage nor the browser's local storage worked). Use <b>⬇️ Export progress</b> before leaving and <b>⬆️ Import progress</b> when you come back."},
+  storageLocalMsg: {half:"💾 Salvando localmente neste navegador (não na nuvem do app). Se abrir em outro dispositivo ou navegador, use <b>⬇️ Exportar</b> / <b>⬆️ Importar</b> para levar seu progresso junto.", pt:"💾 Salvando localmente neste navegador (não na nuvem do app). Se abrir em outro dispositivo ou navegador, use <b>⬇️ Exportar</b> / <b>⬆️ Importar</b> para levar seu progresso junto.", en:"💾 Saving locally in this browser (not in the app's cloud). If you open this on another device or browser, use <b>⬇️ Export</b> / <b>⬆️ Import</b> to bring your progress with you."},
+};
+function t(key){ return UI_TEXT[key][lang]; }
+
+const WING_LABEL_EN = {
+  "🏺 Arqueologia": "🏺 Archaeology", "🐟 Peixes": "🐟 Fish", "🌸 Flora": "🌸 Flora", "🦋 Insetos": "🦋 Insects",
+};
+function trWingLabel(label){ return lang==='en' ? (WING_LABEL_EN[label] || label) : label; }
+
+const SET_NAME_EN = {
+  "Multi-Estação":"Multi-Season", "Primavera — Rio":"Spring — River", "Primavera — Lagoa":"Spring — Pond",
+  "Primavera — Oceano":"Spring — Ocean", "Verão — Rio":"Summer — River", "Verão — Lagoa":"Summer — Pond",
+  "Verão — Oceano":"Summer — Ocean", "Outono — Rio":"Fall — River", "Outono — Lagoa":"Fall — Pond",
+  "Outono — Oceano":"Fall — Ocean", "Inverno — Rio":"Winter — River", "Inverno — Lagoa":"Winter — Pond",
+  "Inverno — Oceano":"Winter — Ocean", "Isca de Peixe":"Fish Bait", "Armadilha de Peixe":"Fish Trap",
+  "Lendários":"Legendary", "Colheita da Primavera":"Spring Harvest", "Flores da Primavera":"Spring Flowers",
+  "Forrageamento da Primavera":"Spring Foraging", "Colheita do Verão":"Summer Harvest", "Flores do Verão":"Summer Flowers",
+  "Forrageamento do Verão":"Summer Foraging", "Colheita do Outono":"Fall Harvest", "Flores do Outono":"Fall Flowers",
+  "Forrageamento do Outono":"Fall Foraging", "Colheita do Inverno":"Winter Harvest", "Flores do Inverno":"Winter Flowers",
+  "Forrageamento do Inverno":"Winter Foraging", "Grama":"Grass", "Praia":"Beach", "Abelhas":"Bees",
+  "Feromônios de Inseto":"Bug Pheromones", "Raros":"Rare",
+};
+function trSetName(name){ return lang==='en' ? (SET_NAME_EN[name] || name) : name; }
+
+const PHRASE_PAIRS_EN = [
+  ["Locais de escavação","Digging spots"], ["escavação geral","general digging"], ["escavação","digging spot"],
+  ["Pescando","Fishing"], ["Mergulhando","Diving"], ["Sua Fazenda","Your Farm"],
+  ["Qualquer local de pesca","Any fishing spot"], ["Qualquer local","Any location"],
+  ["Mundo aberto, o dia todo","Open world, all day"], ["Mundo aberto, dia","Open world, day"],
+  ["Mundo aberto, noite","Open world, night"], ["Mundo aberto (requer Bug Pheromones)","Open world (requires Bug Pheromones)"],
+  ["Mundo aberto","Open world"], ["Requer Bug Pheromones","Requires Bug Pheromones"], ["o dia todo","all day"],
+  ["Plantio ou árvore em","Farming or tree at"], ["Plantio ou cabana do Errol,","Farming or Errol's cabin,"],
+  ["Plantio ou","Farming or"], ["Plantio","Farming"],
+  ["Spawn aleatório, sem área fixa","Random spawn, no fixed spot"],
+  ["Perto do Wishing Well","Near the Wishing Well"], ["Ruínas em","Ruins at"],
+  ["Arbustos perto do gazebo,","Bushes near the gazebo,"], ["norte","north"],
+  ["Faltam 3 itens deste conjunto. Confira o wiki.","Missing 3 items from this set. Check the wiki."],
+  ["Lista incompleta — faltam itens. Confira o wiki.","Incomplete list — missing items. Check the wiki."],
+  ["Lista incompleta — falta itens. Confira o wiki.","Incomplete list — missing items. Check the wiki."],
+  ["Sem dados coletados — confira o wiki.","No data collected — check the wiki."],
+  ["Conjunto novo — sem dados disponíveis no wiki ainda.","New set — no data available on the wiki yet."],
+  ["Conjunto com 4 itens (exceção às regras de 5).","Set with 4 items (exception to the rule of 5)."],
+  ["🌧 Chuva/❄️ Neve","🌧 Rain/❄️ Snow"], ["🌧 Chuva","🌧 Rain"],
+  ["❄️ Neve/Nevasca","❄️ Snow/Blizzard"], ["❄️ Nevasca","❄️ Blizzard"], ["❄️ Neve","❄️ Snow"],
+  ["⛈ Tempestade","⛈ Storm"], ["🍃 Vento (pétalas)","🍃 Wind (petals)"], ["🍃 Vento (folhas)","🍃 Wind (leaves)"],
+  ["🍃 Vento","🍃 Wind"], ["Lagoa","Pond"], ["Rio","River"], ["Oceano","Ocean"],
+];
+function trFreeText(text){
+  if (lang !== 'en' || !text) return text;
+  let out = text;
+  PHRASE_PAIRS_EN.forEach(([ptp, enp])=>{ out = out.split(ptp).join(enp); });
+  return out;
+}
+
+const NAME_OVERRIDES_PT = {
+  "trout":"Truta","carp":"Carpa","salmon":"Salmão","crab":"Caranguejo","shrimp":"Camarão","lobster":"Lagosta",
+  "shark":"Tubarão","eel":"Enguia","herring":"Arenque","perch":"Perca","catfish":"Bagre","tilapia":"Tilápia",
+  "butterfly":"Borboleta","caterpillar":"Lagarta","ladybug":"Joaninha","cricket":"Grilo","firefly":"Vaga-lume",
+  "dragonfly":"Libélula","cicada":"Cigarra","ant":"Formiga","bumblebee":"Mamangava","spider":"Aranha",
+  "snail":"Caracol","worm":"Minhoca","beetle":"Besouro","moth":"Mariposa","mantis":"Louva-a-deus",
+};
+const WORD_MAP_PT = {
+  "aldarian":"aldariana","caldosian":"caldosiana","gauntlet":"manopla","sword":"espada","war":"de guerra",
+  "banner":"bandeira","family":"da família","crest":"brasão","pendant":"pingente","lost":"perdida","crown":"coroa",
+  "breastplate":"peitoral","drinking":"de beber","horn":"chifre","emperor":"do imperador","bust":"busto",
+  "statuette":"estatueta","bronze":"de bronze","clay":"de argila","pot":"pote","feather":"de pena","gem":"gema",
+  "bracelet":"bracelete","mural":"mural","tablet":"tábua","crystal":"de cristal","goblet":"cálice","gold":"de ouro",
+  "coin":"moeda","circlet":"diadema","royal":"real","scepter":"cetro","stone":"pedra","lantern":"lanterna",
+  "amber":"âmbar","trapped":"presa","insect":"inseto","fossilized":"fossilizado","egg":"ovo","meteorite":"meteorito",
+  "tiny":"pequeno","dinosaur":"de dinossauro","skeleton":"esqueleto","trilobite":"trilobita","fossil":"fóssil",
+  "black":"negra","completely":"totalmente","wrong":"errado","map":"mapa","muttering":"resmungante","cube":"cubo",
+  "unknown":"desconhecida","dragon":"de dragão","weightless":"sem peso","lump":"pedaço","giant":"gigante",
+  "fish":"de peixe","scale":"escama","rubber":"de borracha","rusted":"enferrujado","treasure":"do tesouro",
+  "chest":"baú","water":"de água","sphere":"esfera","criminal":"criminosa","confession":"confissão",
+  "comb":"pente","rainbow":"arco-íris","seaweed":"alga","rock":"pedra","hole":"buraco","shield":"escudo",
+  "mirror":"espelho","flint":"de sílex","arrowhead":"ponta de flecha","obsidian":"de obsidiana","blade":"lâmina",
+  "shortcut":"de atalho","scroll":"pergaminho","horse":"cavalo","helmet":"capacete","pickaxe":"picareta",
+  "rucksack":"mochila","slab":"laje","tin":"de lata","lunchbox":"lancheira","crab":"de caranguejo","statue":"estátua",
+  "dense":"densa","starlight":"da luz das estrelas","coral":"coral","shell":"concha","earth":"da terra","infused":"imbuída",
+  "faceted":"facetada","really":"bem","round":"redonda","seriously":"bem","square":"quadrada","fire":"de fogo",
+  "geode":"geodo","red":"vermelha","volcano":"vulcão","warm":"quente","claw":"garra","forged":"forjado","pact":"pacto",
+  "hardened":"endurecida","essence":"essência","beads":"contas","chalice":"cálice","incense":"de incenso",
+  "burner":"queimador","flute":"flauta","misty":"nebuloso","quill":"pena de escrever","brush":"escova","cow":"de vaca",
+  "bell":"sino","hammer":"martelo","sickle":"foice","watering":"regador","can":"lata","perfect":"perfeito",
+  "copper":"de cobre","ore":"minério","iron":"de ferro","silver":"de prata","ruby":"rubi","sapphire":"safira",
+  "emerald":"esmeralda","diamond":"diamante","pink":"rosa","apple":"maçã","mandrake":"de mandrágora","root":"raiz",
+  "gathering":"de coleta","basket":"cesta","metal":"de metal","leaf":"folha","petrified":"petrificada","wood":"madeira",
+  "amphora":"ânfora","message":"mensagem","bottle":"garrafa","koi":"carpa-koi","pike":"lúcio","bass":"robalo",
+  "bluegill":"perca-azul","chub":"peixe-chub","paddlefish":"peixe-espátula","walleye":"peixe-lobo","angel":"anjo",
+  "barb":"barbo","goldfish":"peixe-dourado","anchovy":"anchova","mackerel":"cavala","sunfish":"peixe-lua",
+  "bream":"brema","loach":"peixe-linguado","minnow":"peixinho","sweetfish":"ayu","tarpon":"tarpão","bullhead":"bagrinho",
+  "shiner":"peixe-prateado","sauger":"peixe-lúcio-perca","char":"salmão-alpino","dart":"peixe-flecha","grouper":"garoupa",
+  "stingray":"arraia","grayling":"peixe-tímalo","lamprey":"lampreia","razorback":"peixe-lombo-afiado","shad":"savelha",
+  "bluefish":"peixe-azul","killifish":"peixinho-anual","striped":"listrado","butterfish":"peixe-manteiga",
+  "halibut":"linguado-gigante","mullet":"tainha","saury":"peixe-agulha","bowfish":"peixe-arco","dace":"peixe-dace",
+  "freshwater":"de água doce","gar":"peixe-jacaré","burbot":"peixe-lota","flathead":"cabeça-chata","alligator":"jacaré",
+  "lance":"peixe-lança","sand":"de areia","king":"rei","oar":"peixe-remo","cave":"da caverna","guppy":"guppy",
+  "archer":"peixe-arqueiro","betta":"betta","transparent":"transparente","jellyfish":"água-viva","balloon":"balão",
+  "charger":"carregador","rockbiter":"mordedor-de-pedra","shardfin":"barbatana-de-caco","armored":"blindado",
+  "seadragon":"dragão-do-mar","firesail":"vela-de-fogo","piranha":"piranha","sulfur":"de enxofre","winged":"alado",
+  "gazer":"observador","luminescent":"luminescente","coelacanth":"celacanto","cherry":"de cereja","lightning":"raio",
+  "snow":"de neve","hummingbird":"beija-flor","hawk":"falcão","roly":"tatu","poly":"bola","luna":"lua",
+  "monarch":"monarca","tiger":"tigre","swallowtail":"rabo-de-andorinha","walking":"que anda","brightbulb":"lâmpada-brilhante",
+  "frost":"gelado","flutter":"esvoaçante","stick":"graveto","winterpillar":"lagarta-de-inverno","flower":"flor",
+  "fur":"pele","moonlight":"luar","sweet":"doce","queen":"rainha","biggest":"maior","birdwing":"asa-de-pássaro",
+  "saint":"santo","sunset":"pôr-do-sol","jewel":"joia","magma":"magma","orchid":"orquídea","fairy":"fada",
+  "snowball":"bola-de-neve","speedy":"veloz","strobe":"estroboscópico","nugget":"pepita","mine":"da mina",
+  "tunnel":"do túnel","millipede":"piolho-de-cobra","puddle":"poça","scarab":"escaravelho","waterfly":"mosca-d'água",
+  "wing":"asa","earthworm":"minhoca-de-terra","shard":"caco","roach":"barata","wasp":"vespa","cooktop":"fogão",
+  "smoke":"fumaça","hidden":"escondido","parchment":"pergaminho","void":"vazio","grasshopper":"gafanhoto",
+  "icehopper":"pulador-de-gelo","leafhopper":"pulador-de-folha","petalhopper":"pulador-de-pétala","strawhopper":"pulador-de-palha",
+  "hermit":"eremita","relic":"relíquia","surf":"onda","waterbug":"barata-d'água","windleaf":"folha-do-vento","mote":"partícula",
+  "clay":"argila","peat":"turfa","shard":"caco","mass":"massa","sod":"torrão","glass":"vidro","porcelain":"porcelana",
+  "figure":"figura","worn":"desgastado","toadstool":"cogumelo","shadow":"sombra","sweetroot":"raiz-doce","jade":"jade",
+  "dulse":"alga-dulse","mussels":"mexilhões","grapes":"uvas","lettuce":"alface","underseaweed":"alga-submarina",
+  "berries":"frutinhas","earthshroom":"cogumelo-da-terra","rockroot":"raiz-de-pedra","shale":"xisto","ash":"cinza",
+  "breath":"sopro","pepper":"pimenta","hot":"quente","chestnuts":"castanhas","written":"escrita","spell":"feitiço",
+  "fruit":"fruta","ethereal":"etérea","blossom":"flor","pearl":"pérola","herb":"erva","powder":"pó","voidite":"voidita",
+  "horn":"chifre","loam":"barro","katydid":"esperança","singing":"cantora","dragon-horn":"chifre-de-dragão",
+};
+function autoTranslateName(name){
+  const key = name.toLowerCase();
+  if (NAME_OVERRIDES_PT[key]) return NAME_OVERRIDES_PT[key];
+  const words = name.split(/([ -])/);
+  const translated = words.map(w=>{
+    if (w===' '||w==='-') return w;
+    const lw = w.toLowerCase().replace(/[^a-zà-ú']/gi,'');
+    if (WORD_MAP_PT[lw]){
+      const tr = WORD_MAP_PT[lw];
+      return tr.charAt(0).toUpperCase() + tr.slice(1);
+    }
+    return w;
+  });
+  return translated.join('');
+}
+function trItemName(item){
+  if (lang === 'pt'){
+    if (item.pt) return item.pt;
+    return autoTranslateName(item.n);
+  }
+  return item.n;
+}
+
+const DATA = {
+  arqueologia: { label: "🏺 Arqueologia", sets: [
+    {name:"Aldarian", season:['all'], items:[
+      {n:"Aldarian Gauntlet", loc:"The Narrows (escavação)", r:"rare"},
+      {n:"Aldarian Sword", loc:"The Narrows (escavação)", r:"uncommon"},
+      {n:"Aldarian War Banner", loc:"The Narrows (escavação)", r:"rare"},
+      {n:"Family Crest Pendant", loc:"The Narrows (escavação)", r:"uncommon"},
+      {n:"Lost Crown of Aldaria", loc:"The Narrows (escavação)", r:"legendary"},
+    ]},
+    {name:"Caldosian", season:['all'], items:[
+      {n:"Caldosian Breastplate", loc:"The Eastern Road (escavação)", r:"rare"},
+      {n:"Caldosian Drinking Horn", loc:"The Eastern Road (escavação)", r:"rare"},
+      {n:"Caldosian Emperor Bust", loc:"The Eastern Road (escavação)", r:"uncommon"},
+      {n:"Caldosian Sword", loc:"The Eastern Road (escavação)", r:"uncommon"},
+      {n:"Statuette of Caldarus", loc:"The Eastern Road (escavação)", r:"legendary"},
+    ]},
+    {name:"Alda", season:['all'], items:[
+      {n:"Alda Bronze Sword", loc:"Sweetwater Farm (escavação)", r:"rare"},
+      {n:"Alda Clay Pot", loc:"Sweetwater Farm (escavação)", r:"uncommon"},
+      {n:"Alda Feather Pendant", loc:"Sweetwater Farm (escavação)", r:"uncommon"},
+      {n:"Alda Gem Bracelet", loc:"Sweetwater Farm (escavação)", r:"legendary"},
+      {n:"Alda Mural Tablet", loc:"Sweetwater Farm (escavação)", r:"rare"},
+    ]},
+    {name:"Ancient", season:['all'], items:[
+      {n:"Ancient Crystal Goblet", loc:"The Western Ruins (escavação)", r:"rare"},
+      {n:"Ancient Gold Coin", loc:"The Western Ruins (escavação)", r:"uncommon"},
+      {n:"Ancient Horn Circlet", loc:"The Western Ruins (escavação)", r:"rare"},
+      {n:"Ancient Royal Scepter", loc:"The Western Ruins (escavação)", r:"legendary"},
+      {n:"Ancient Stone Lantern", loc:"The Western Ruins (escavação)", r:"uncommon"},
+    ]},
+    {name:"Prehistoric", season:['all'], items:[
+      {n:"Amber Trapped Insect", loc:"The Beach (escavação)", r:"uncommon"},
+      {n:"Fossilized Egg", loc:"The Beach (escavação)", r:"rare"},
+      {n:"Meteorite", loc:"The Beach (escavação)", r:"legendary"},
+      {n:"Tiny Dinosaur Skeleton", loc:"The Beach (escavação)", r:"rare"},
+      {n:"Trilobite Fossil", loc:"The Beach (escavação)", r:"uncommon"},
+    ]},
+    {name:"Oopart", season:['all'], items:[
+      {n:"Black Tablet", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Completely Wrong Map", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Muttering Cube", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Unknown Dragon Statuette", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Weightless Stone", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+    ]},
+    {name:"Aquatic", season:['all'], items:[
+      {n:"Coin Lump", loc:"Pescando (skill Aquatic Antiquities)", r:"rare"},
+      {n:"Giant Fish Scale", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Rubber Fish", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Rusted Treasure Chest", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Water Sphere", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+    ]},
+    {name:"Sunken", season:['all'], items:[
+      {n:"Criminal Confession", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Mermaid's Comb", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rainbow Seaweed", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rock with a Hole", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rusted Shield", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+    ]},
+    {name:"Buried", season:['all'], items:[
+      {n:"Diamond-backed Mirror", loc:"The Mines (escavação geral)", r:"rare"},
+      {n:"Flint Arrowhead", loc:"The Mines (escavação geral)", r:"uncommon"},
+      {n:"Obsidian Blade", loc:"The Mines (escavação geral)", r:"rare"},
+      {n:"Shortcut Scroll", loc:"The Mines (escavação geral)", r:"legendary"},
+      {n:"Stone Horse", loc:"The Mines (escavação geral)", r:"uncommon"},
+    ]},
+    {name:"Upper Mines", season:['all'], items:[
+      {n:"Miner's Helmet", loc:"Upper Mines (andares 1–19)", r:"rare"},
+      {n:"Miner's Pickaxe", loc:"Upper Mines (andares 1–19)", r:"common"},
+      {n:"Miner's Rucksack", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+      {n:"Miner's Slab", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+      {n:"Tin Lunchbox", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+    ]},
+    {name:"Tide Cavern", season:['all'], items:[
+      {n:"Crab Statue", loc:"Tide Caverns (andares 21–39)", r:"rare"},
+      {n:"Dense Water", loc:"Tide Caverns (andares 21–39)", r:"uncommon"},
+      {n:"Starlight Coral", loc:"Tide Caverns (andares 21–39)", r:"common"},
+      {n:"Stone Shell", loc:"Tide Caverns (andares 21–39)", r:"common"},
+      {n:"Tidestone", loc:"Tide Caverns (andares 21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth", season:['all'], items:[
+      {n:"Earth-infused Stone", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+      {n:"Faceted Rock Gem", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+      {n:"Really Round Rock", loc:"Deep Earth (andares 41–59)", r:"common"},
+      {n:"Rock Statue", loc:"Deep Earth (andares 41–59)", r:"rare"},
+      {n:"Seriously Square Stone", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves", season:['all'], items:[
+      {n:"Fire Crystal", loc:"Lava Caves (andares 61–79)", r:"common"},
+      {n:"Rainbow Geode", loc:"Lava Caves (andares 61–79)", r:"uncommon"},
+      {n:"Red Obsidian", loc:"Lava Caves (andares 61–79)", r:"uncommon"},
+      {n:"Tiny Volcano", loc:"Lava Caves (andares 61–79)", r:"rare"},
+      {n:"Warm Rock", loc:"Lava Caves (andares 61–79)", r:"common"},
+    ]},
+    {name:"Dragon", season:['all'], items:[
+      {n:"Dragon Claw", loc:"Ancient Ruins (andares 81–99)", r:"uncommon"},
+      {n:"Dragon-Forged Bracelet", loc:"Ancient Ruins (andares 81–99)", r:"rare"},
+      {n:"Dragon Pact Tablet", loc:"Ancient Ruins (andares 81–99)", r:"legendary"},
+      {n:"Dragon Scale", loc:"Ancient Ruins (andares 81–99)", r:"uncommon"},
+      {n:"Hardened Essence", loc:"Ancient Ruins (andares 81–99)", r:"rare"},
+    ]},
+    {name:"Ritual", season:['all'], items:[
+      {n:"Ritual Beads", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Chalice", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Incense Burner", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Scepter", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"rare"},
+      {n:"Ritual Tablet", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"rare"},
+    ]},
+    {name:"Mist", season:['all'], items:[
+      {n:"Mist Crystal", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+      {n:"Mist Flute", loc:"Mist Spots (skill Mist Sight)", r:"rare"},
+      {n:"Mist Scroll", loc:"Mist Spots (skill Mist Sight)", r:"rare"},
+      {n:"Misty Black Mirror", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+      {n:"Misty Feather Quill", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+    ]},
+    {name:"Vintage Farm Tools", season:['all'], items:[
+      {n:"Vintage Brush", loc:"Sua Fazenda (skill Former Farmers)", r:"rare"},
+      {n:"Vintage Cow Bell", loc:"Sua Fazenda (skill Former Farmers)", r:"legendary"},
+      {n:"Vintage Hammer", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+      {n:"Vintage Sickle", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+      {n:"Vintage Watering Can", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+    ]},
+    {name:"Metals Of Mistria", season:['all'], items:[
+      {n:"Perfect Copper Ore", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Perfect Iron Ore", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Perfect Silver Ore", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Perfect Gold Ore", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Perfect Mistril Ore", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Gems Of Mistria", season:['all'], items:[
+      {n:"Perfect Ruby", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Perfect Sapphire", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Perfect Emerald", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Perfect Diamond", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Perfect Pink Diamond", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Deep Woods", season:['all'], items:[
+      {n:"Crystal Apple", loc:"The Deep Woods", r:"rare"},
+      {n:"Fossilized Mandrake Root", loc:"The Deep Woods", r:"legendary"},
+      {n:"Gathering Basket", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Metal Leaf", loc:"The Deep Woods", r:"rare"},
+      {n:"Petrified Wood", loc:"The Deep Woods", r:"uncommon"},
+    ]},
+    {name:"Fish Trap", season:['all'], items:[
+      {n:"Clay Amphora", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Sea Glass", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Porcelain Figure", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Worn Pendant", loc:"Fish Trap, The Beach", r:"rare"},
+      {n:"Message in a Bottle", loc:"Fish Trap, The Beach", r:"legendary"},
+    ]},
+    {name:"Dig Site", season:['all'], items:[
+      {n:"Clay", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Peat", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Shard Mass", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Shards", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Sod", loc:"Locais de escavação (qualquer)", r:"common"},
+    ]},
+  ]},
+  peixes: { label: "🐟 Peixes", sets: [
+    {name:"Multi-Estação", season:['all'], items:[
+      {n:"Koi", loc:"Lagoa", r:"common"},
+      {n:"Pike", loc:"Rio", r:"common"},
+      {n:"Pollock", loc:"Oceano", r:"common"},
+      {n:"Smallmouth Bass", loc:"Rio", r:"common"},
+      {n:"Trout", loc:"Qualquer local de pesca", r:"common"},
+    ]},
+    {name:"Primavera — Rio", season:['sp'], items:[
+      {n:"Bluegill", loc:"Rio", r:"common"},
+      {n:"Carp", loc:"Rio", r:"common"},
+      {n:"Chub", loc:"Rio", r:"common"},
+      {n:"Paddlefish", loc:"Rio", r:"rare", weather:['🌊 Giant']},
+      {n:"Walleye", loc:"Rio", r:"common", weather:['🌧 Chuva']},
+    ]},
+    {name:"Primavera — Lagoa", season:['sp'], items:[
+      {n:"Angel Fish", loc:"Lagoa", r:"common"},
+      {n:"Barb", loc:"Lagoa", r:"common"},
+      {n:"Brown Trout", loc:"Lagoa", r:"common"},
+      {n:"Crucian Carp", loc:"Lagoa", r:"common"},
+      {n:"Goldfish", loc:"Lagoa", r:"rare"},
+    ]},
+    {name:"Primavera — Oceano", season:['sp'], items:[
+      {n:"Anchovy", loc:"Oceano", r:"common"},
+      {n:"Lobster", loc:"Oceano", r:"common"},
+      {n:"Mackerel", loc:"Oceano", r:"common", weather:['🌧 Chuva']},
+      {n:"Ocean Sunfish", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Shrimp", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Verão — Rio", season:['su'], items:[
+      {n:"Bream", loc:"Rio", r:"common"},
+      {n:"Loach", loc:"Rio", r:"common"},
+      {n:"Minnow", loc:"Rio", r:"common"},
+      {n:"Sweetfish", loc:"Rio", r:"common"},
+      {n:"Tarpon", loc:"Rio", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Verão — Lagoa", season:['su'], items:[
+      {n:"Brown Bullhead", loc:"Lagoa", r:"common"},
+      {n:"Giant Koi", loc:"Lagoa", r:"rare", weather:['🌊 Giant']},
+      {n:"Golden Shiner", loc:"Lagoa", r:"common"},
+      {n:"Lake Chub", loc:"Lagoa", r:"common"},
+      {n:"Sauger", loc:"Lagoa", r:"common"},
+    ]},
+    {name:"Verão — Oceano", season:['su'], items:[
+      {n:"Char", loc:"Oceano", r:"common"},
+      {n:"Crab", loc:"Oceano", r:"common"},
+      {n:"Dart", loc:"Oceano", r:"common"},
+      {n:"Grouper", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Stingray", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Outono — Rio", season:['fa'], items:[
+      {n:"Grayling", loc:"Rio", r:"common", weather:['🌧 Chuva']},
+      {n:"Lamprey", loc:"Rio", r:"common"},
+      {n:"Perch", loc:"Rio", r:"common", weather:['🌧 Chuva']},
+      {n:"Razorback", loc:"Rio", r:"rare", weather:['🌧 Chuva']},
+      {n:"Shad", loc:"Rio", r:"common"},
+    ]},
+    {name:"Outono — Lagoa", season:['fa'], items:[
+      {n:"Bluefish", loc:"Lagoa", r:"common", weather:['🌧 Chuva']},
+      {n:"Killifish", loc:"Lagoa", r:"common"},
+      {n:"Rainbow Trout", loc:"Lagoa", r:"common"},
+      {n:"Striped Bass", loc:"Lagoa", r:"common"},
+      {n:"White Perch", loc:"Lagoa", r:"rare"},
+    ]},
+    {name:"Outono — Oceano", season:['fa'], items:[
+      {n:"Butterfish", loc:"Oceano", r:"common"},
+      {n:"Halibut", loc:"Oceano", r:"common", weather:['🌧 Chuva']},
+      {n:"Mullet", loc:"Oceano", r:"common"},
+      {n:"Saury", loc:"Oceano", r:"common"},
+      {n:"Shark", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Inverno — Rio", season:['wi'], items:[
+      {n:"Bowfish", loc:"Rio", r:"common"},
+      {n:"Dace", loc:"Rio", r:"common", weather:['❄️ Neve']},
+      {n:"Freshwater Eel", loc:"Rio", r:"common"},
+      {n:"Herring", loc:"Rio", r:"common"},
+      {n:"Shadow Bass", loc:"Rio", r:"rare"},
+    ]},
+    {name:"Inverno — Lagoa", season:['wi'], items:[
+      {n:"Alligator Gar", loc:"Lagoa", r:"rare", weather:['🌊 Giant']},
+      {n:"Burbot", loc:"Lagoa", r:"common", weather:['❄️ Neve']},
+      {n:"Flathead Catfish", loc:"Lagoa", r:"common"},
+      {n:"Giant Tilapia", loc:"Lagoa", r:"uncommon", weather:['🌊 Giant']},
+      {n:"Tilapia", loc:"Lagoa", r:"common"},
+    ]},
+    {name:"Inverno — Oceano", season:['wi'], items:[
+      {n:"Horse Mackerel", loc:"Oceano", r:"common"},
+      {n:"King Crab", loc:"Oceano", r:"common", weather:['❄️ Neve']},
+      {n:"Oarfish", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Sand Lance", loc:"Oceano", r:"common"},
+      {n:"Sea Bass", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Isca de Peixe", season:['all'], items:[
+      {n:"Massive Minnow", loc:"Qualquer local (requer Fish Bait)", r:"common"},
+      {n:"Copper Rockfish", loc:"Qualquer local (requer Fish Bait)", r:"common"},
+      {n:"Iron Fish", loc:"Qualquer local (requer Fish Bait)", r:"uncommon"},
+      {n:"Silver Squid", loc:"Qualquer local (requer Fish Bait)", r:"uncommon"},
+      {n:"Golden Eel", loc:"Qualquer local (requer Fish Bait)", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Armadilha de Peixe", season:['all'], items:[
+      {n:"Blue Crab", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Sea Urchin", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Bait Thief", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Hake", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Amberjack", loc:"Fish Trap, The Beach", r:"rare"},
+    ]},
+    {name:"Deep Woods", season:['all'], items:[
+      {n:"Sunny", loc:"The Deep Woods", r:"common", weather:['🌧 Chuva/❄️ Neve']},
+      {n:"Forest Perch", loc:"The Deep Woods", r:"common"},
+      {n:"Silver Redhorse", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Lake Trout", loc:"The Deep Woods", r:"common"},
+      {n:"Muskie", loc:"The Deep Woods", r:"uncommon"},
+    ]},
+    {name:"Upper Mines", season:['all'], items:[
+      {n:"Cave Eel", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Cave Shark", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Cave Shrimp", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Rock Guppy", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Stone Loach", loc:"Upper Mines (1–19)", r:"common"},
+    ]},
+    {name:"Tide Caverns", season:['all'], items:[
+      {n:"Archerfish", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Mini-Whale Shark", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Sapphire Betta", loc:"Tide Caverns (21–39)", r:"common"},
+      {n:"Transparent Jellyfish", loc:"Tide Caverns (21–39)", r:"common"},
+      {n:"Water Balloon Fish", loc:"Tide Caverns (21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth", season:['all'], items:[
+      {n:"Earth Eel", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Emerald Horned Charger", loc:"Deep Earth (41–59)", r:"rare"},
+      {n:"Pebble Minnow", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Rockbiter", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Shardfin", loc:"Deep Earth (41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves", season:['all'], items:[
+      {n:"Armored Bass", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Candelabra Seadragon", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Firesail Fish", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Lava Piranha", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Sulfur Crab", loc:"Lava Caves (61–79)", r:"uncommon"},
+    ]},
+    {name:"Ruins", season:['all'], items:[
+      {n:"Winged Shrimp", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Gazer", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Luminescent Crab", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Giant Jellyfish", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Coelacanth", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Lendários", season:['all'], note:"Conjunto com 4 itens (exceção às regras de 5).", items:[
+      {n:"Cherry Fish", loc:"Lagoa", r:"legendary", season:['sp'], weather:['🍃 Vento (pétalas)']},
+      {n:"Leaf Fish", loc:"Rio", r:"legendary", season:['fa'], weather:['🍃 Vento (folhas)']},
+      {n:"Lightning Fish", loc:"Qualquer local", r:"legendary", season:['su'], weather:['⛈ Tempestade']},
+      {n:"Snow Fish", loc:"Oceano", r:"legendary", season:['wi'], weather:['❄️ Nevasca']},
+    ]},
+  ]},
+  flora: { label: "🌸 Flora", sets: [
+    {name:"Colheita da Primavera", season:['sp'], items:[
+      {n:"Cabbage", pt:"Repolho", loc:"Plantio", r:""},
+      {n:"Cherry", pt:"Cereja", loc:"Plantio ou árvore em The Eastern Road", r:""},
+      {n:"Potato", pt:"Batata", loc:"Plantio", r:""},
+      {n:"Strawberry", pt:"Morango", loc:"Plantio", r:""},
+      {n:"Turnip", pt:"Nabo", loc:"Plantio", r:""},
+    ]},
+    {name:"Flores da Primavera", season:['sp'], items:[
+      {n:"Daffodil", pt:"Narciso", loc:"Sweetwater Farm / The Narrows", r:""},
+      {n:"Dandelion", pt:"Dente-de-leão", loc:"Mistria / The Narrows / Sweetwater Farm", r:""},
+      {n:"Lilac", pt:"Lilás", loc:"The Eastern Road / Sweetwater Farm", r:""},
+      {n:"Snowdrop Anemone", loc:"The Western Ruins / The Beach", r:""},
+      {n:"Tulip", pt:"Tulipa", loc:"The Eastern Road / The Narrows / Sweetwater Farm", r:""},
+    ]},
+    {name:"Forrageamento da Primavera", season:['sp'], items:[
+      {n:"Fennel", pt:"Erva-doce", loc:"The Narrows / The Eastern Road", r:""},
+      {n:"Fiddlehead", loc:"The Narrows / Sweetwater Farm", r:""},
+      {n:"Morel Mushroom", loc:"Spawn aleatório, sem área fixa", r:""},
+      {n:"Nettle", pt:"Urtiga", loc:"Sweetwater Farm", r:""},
+      {n:"Wild Leek", loc:"Mistria / The Narrows / The Eastern Road", r:""},
+    ]},
+    {name:"Colheita do Verão", season:['su'], items:[
+      {n:"Chili Pepper", pt:"Pimenta", loc:"Plantio", r:""},
+      {n:"Corn", pt:"Milho", loc:"Plantio", r:""},
+      {n:"Cucumber", pt:"Pepino", loc:"Plantio", r:""},
+      {n:"Tomato", pt:"Tomate", loc:"Plantio", r:""},
+      {n:"Watermelon", pt:"Melancia", loc:"Plantio", r:""},
+    ]},
+    {name:"Flores do Verão", season:['su'], items:[
+      {n:"Catmint", loc:"The Narrows", r:""},
+      {n:"Cosmos", loc:"Sweetwater Farm", r:""},
+      {n:"Daisy", pt:"Margarida", loc:"Sweetwater Farm / The Narrows / The Western Ruins / The Eastern Road", r:""},
+      {n:"Iris", loc:"The Beach / The Narrows / Sweetwater Farm", r:""},
+      {n:"Marigold", pt:"Cravo-de-defunto", loc:"The Western Ruins / The Deep Woods", r:""},
+    ]},
+    {name:"Forrageamento do Verão", season:['su'], items:[
+      {n:"Basil", pt:"Manjericão", loc:"The Eastern Road", r:""},
+      {n:"Dill", pt:"Endro", loc:"The Narrows / The Beach / The Western Ruins", r:""},
+      {n:"Oregano", pt:"Orégano", loc:"Mistria", r:""},
+      {n:"Sage", pt:"Sálvia", loc:"The Narrows / The Beach", r:""},
+      {n:"Thyme", pt:"Tomilho", loc:"Sweetwater Farm", r:""},
+    ]},
+    {name:"Colheita do Outono", season:['fa'], items:[
+      {n:"Apple", pt:"Maçã", loc:"Plantio ou árvore em The Eastern Road", r:""},
+      {n:"Broccoli", pt:"Brócolis", loc:"Plantio", r:""},
+      {n:"Cranberry", loc:"Plantio", r:""},
+      {n:"Pumpkin", pt:"Abóbora", loc:"Plantio", r:""},
+      {n:"Sweet Potato", pt:"Batata-doce", loc:"Plantio", r:""},
+    ]},
+    {name:"Flores do Outono", season:['fa'], items:[
+      {n:"Celosia", loc:"Plantio", r:""},
+      {n:"Chrysanthemum", pt:"Crisântemo", loc:"Plantio", r:""},
+      {n:"Fog Orchid", loc:"The Eastern Road / The Western Ruins", r:""},
+      {n:"Heather", loc:"Mistria / The Beach / The Narrows", r:""},
+      {n:"Viola", loc:"The Eastern Road", r:""},
+    ]},
+    {name:"Forrageamento do Outono", season:['fa'], items:[
+      {n:"Chestnut", pt:"Castanha", loc:"The Beach / Sweetwater Farm / The Narrows", r:""},
+      {n:"Garlic", pt:"Alho", loc:"Ruínas em The Eastern Road", r:""},
+      {n:"Horseradish", pt:"Raiz-forte", loc:"Sweetwater Farm / The Eastern Road / The Beach", r:""},
+      {n:"Moon Fruit", loc:"Perto do Wishing Well (Eastern Road) / Sweetwater Farm / The Beach", r:""},
+      {n:"Rosemary", pt:"Alecrim", loc:"Sweetwater Farm", r:""},
+    ]},
+    {name:"Colheita do Inverno", season:['wi'], items:[
+      {n:"Beet", pt:"Beterraba", loc:"Plantio", r:""},
+      {n:"Cauliflower", pt:"Couve-flor", loc:"Plantio", r:""},
+      {n:"Daikon Radish", loc:"Plantio", r:""},
+      {n:"Pomegranate", pt:"Romã", loc:"Plantio ou cabana do Errol, The Narrows", r:""},
+      {n:"Snow Peas", pt:"Ervilha", loc:"Plantio", r:""},
+    ]},
+    {name:"Flores do Inverno", season:['wi'], items:[
+      {n:"Crocus", loc:"The Eastern Road / Sweetwater Farm / The Beach", r:""},
+      {n:"Frost Lily", loc:"The Eastern Road / The Beach / The Narrows", r:""},
+      {n:"Jasmine", pt:"Jasmim", loc:"Sweetwater Farm / The Eastern Road", r:""},
+      {n:"Poinsettia", loc:"The Beach / The Narrows / Sweetwater Farm", r:""},
+      {n:"Snapdragon", loc:"The Western Ruins", r:""},
+    ]},
+    {name:"Forrageamento do Inverno", season:['wi'], items:[
+      {n:"Burdock Root", loc:"Mistria / The Eastern Road / The Narrows (norte)", r:""},
+      {n:"Holly", pt:"Azevinho", loc:"The Eastern Road / Sweetwater Farm", r:""},
+      {n:"Oyster Mushroom", loc:"The Eastern Road / Mistria / The Beach", r:""},
+      {n:"Pineshroom", loc:"Sweetwater Farm", r:""},
+      {n:"Rose Hip", loc:"Arbustos perto do gazebo, Manor House / Mistria", r:""},
+    ]},
+    {name:"Deep Woods", season:['all'], items:[
+      {n:"Thorn Vine", loc:"The Deep Woods", r:""},
+      {n:"Spirit Mushroom", loc:"The Deep Woods", r:""},
+      {n:"Temple Flower", loc:"The Deep Woods", r:""},
+      {n:"Walnut", pt:"Noz", loc:"The Deep Woods", r:""},
+      {n:"Bell Berry", loc:"The Deep Woods", r:""},
+    ]},
+    {name:"Upper Mines", season:['all'], items:[
+      {n:"Narrows Moss", loc:"Upper Mines (1–19)", r:""},
+      {n:"Red Toadstool", loc:"Upper Mines (1–19), drop ao derrotar Red Mushroom", r:""},
+      {n:"Shadow Flower", loc:"Upper Mines (1–19)", r:""},
+      {n:"Sweetroot", loc:"Upper Mines (1–19)", r:""},
+      {n:"Upper Mines Mushroom", loc:"Upper Mines (1–19)", r:""},
+    ]},
+    {name:"Tide Caverns", season:['all'], items:[
+      {n:"Underseaweed", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Sea Grapes", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Jade Dulse", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Mines Mussels", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Tide Lettuce", loc:"Tide Caverns (21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth", season:['all'], items:[
+      {n:"Crystal Berries", loc:"Deep Earth (41–59)", r:""},
+      {n:"Crystal Rose", loc:"Deep Earth (41–59)", r:""},
+      {n:"Earthshroom", loc:"Deep Earth (41–59)", r:""},
+      {n:"Rockroot", loc:"Deep Earth (41–59)", r:""},
+      {n:"Shale Grass", loc:"Deep Earth (41–59)", r:""},
+    ]},
+    {name:"Lava Caves", season:['all'], items:[
+      {n:"Ash Mushroom", loc:"Lava Caves (61–79)", r:""},
+      {n:"Breath of Flame", loc:"Lava Caves (61–79)", r:""},
+      {n:"Flame Pepper", loc:"Lava Caves (61–79)", r:""},
+      {n:"Hot Potato", loc:"Lava Caves (61–79)", r:""},
+      {n:"Lava Chestnuts", loc:"Lava Caves (61–79)", r:""},
+    ]},
+    {name:"Ruins", season:['all'], note:"Essence Blossom ainda não está disponível no jogo (item planejado, não implementado) — os outros 4 já são obtidos normalmente.", items:[
+      {n:"Written Root", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Spell Fruit", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Ethereal Grass", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Essence Blossom", loc:"Ancient Ruins (81–99) — ainda não implementado no jogo", r:""},
+    ]},
+    {name:"Void Forage", season:['all'], items:[
+      {n:"Void Pearl", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Herb", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Powder", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Stone", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Voidite", loc:"Ancient Ruins (81–99), quebrando aglomerados de Voidite (requer Void Sight)", r:""},
+    ]},
+  ]},
+  insetos: { label: "🦋 Insetos", sets: [
+    {name:"Multi-Estação", season:['all'], items:[
+      {n:"Ant", pt:"Formiga", loc:"Mundo aberto", r:"common", season:['sp','su','fa']},
+      {n:"Bumblebee", pt:"Mamangava", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Fuzzy Moth", loc:"Mundo aberto, noite", r:"uncommon"},
+      {n:"Hummingbird Hawk Moth", loc:"Mundo aberto", r:"rare", season:['sp','su','fa']},
+      {n:"Praying Mantis", pt:"Louva-a-deus", loc:"Mundo aberto, dia", r:"common"},
+    ]},
+    {name:"Primavera", season:['sp'], items:[
+      {n:"Butterfly", pt:"Borboleta", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Caterpillar", pt:"Lagarta", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Ladybug", pt:"Joaninha", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Luna Moth", loc:"Mundo aberto, noite", r:"rare"},
+      {n:"Roly Poly", pt:"Tatuzinho", loc:"Mundo aberto, o dia todo", r:"uncommon"},
+    ]},
+    {name:"Verão", season:['su'], items:[
+      {n:"Cicada", pt:"Cigarra", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Cricket", pt:"Grilo", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Dragonfly", pt:"Libélula", loc:"Mundo aberto, dia", r:"uncommon", weather:['🌧 Chuva']},
+      {n:"Firefly", pt:"Vaga-lume", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Sand Bug", loc:"The Beach, o dia todo", r:"common"},
+    ]},
+    {name:"Outono", season:['fa'], items:[
+      {n:"Cicada Nymph", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Inchworm", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Monarch Butterfly", loc:"Mundo aberto, dia", r:"common", weather:['🍃 Vento']},
+      {n:"Tiger Swallowtail Butterfly", loc:"Mundo aberto, dia", r:"uncommon", weather:['🍃 Vento']},
+      {n:"Walking Leaf", loc:"Mundo aberto, dia", r:"uncommon"},
+    ]},
+    {name:"Inverno", season:['wi'], items:[
+      {n:"Brightbulb Moth", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Crystal Caterpillar", loc:"Mundo aberto", r:"rare", weather:['❄️ Neve/Nevasca']},
+      {n:"Frost Flutter Butterfly", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Walking Stick", pt:"Bicho-pau", loc:"Mundo aberto, o dia todo", r:"uncommon"},
+      {n:"Winterpillar", loc:"Mundo aberto, o dia todo", r:"common"},
+    ]},
+    {name:"Abelhas", season:['all'], items:[
+      {n:"Big Bee", loc:"Mundo aberto, dia", r:"uncommon", season:['sp','su','fa']},
+      {n:"Flower Bee", loc:"Mundo aberto, dia", r:"rare"},
+      {n:"Fur Bee", loc:"Mundo aberto, dia", r:"common", season:['wi']},
+      {n:"Moonlight Bee", loc:"Mundo aberto, noite", r:"rare"},
+      {n:"Sweet Bee", loc:"Mundo aberto, dia", r:"uncommon"},
+    ]},
+    {name:"Feromônios de Inseto", season:['all'], items:[
+      {n:"Ant Queen", loc:"Mundo aberto (requer Bug Pheromones)", r:"common"},
+      {n:"Biggest Beetle", loc:"Requer Bug Pheromones", r:"veryrare"},
+      {n:"Queen's Birdwing", loc:"Requer Bug Pheromones", r:"rare"},
+      {n:"Saint Mantis", loc:"Requer Bug Pheromones", r:"uncommon"},
+      {n:"Sunset Moth", loc:"Requer Bug Pheromones", r:"common"},
+    ]},
+    {name:"Raros", season:['all'], items:[
+      {n:"Jewel Beetle", loc:"Mundo aberto", r:"rare", season:['su']},
+      {n:"Lightning Dragonfly", loc:"Mundo aberto", r:"rare", season:['sp','su','fa'], weather:['⛈ Tempestade']},
+      {n:"Magma Beetle", loc:"Mundo aberto", r:"rare", season:['su']},
+      {n:"Mistmoth", loc:"Mundo aberto, noite", r:"rare", season:['fa']},
+      {n:"Orchid Mantis", loc:"Mundo aberto, dia", r:"rare", season:['sp']},
+    ]},
+    {name:"Lendários", season:['all'], items:[
+      {n:"Fairy Bee", loc:"Mundo aberto", r:"legendary", season:['fa']},
+      {n:"Flower Crown Beetle", loc:"Mundo aberto", r:"legendary", season:['sp']},
+      {n:"Snowball Beetle", loc:"Mundo aberto", r:"legendary", season:['wi'], weather:['❄️ Nevasca']},
+      {n:"Speedy Snail", loc:"Mundo aberto", r:"legendary", season:['sp','su','fa']},
+      {n:"Strobe Firefly", loc:"Mundo aberto", r:"legendary", season:['su']},
+    ]},
+    {name:"Upper Mines", season:['all'], items:[
+      {n:"Copper Nugget Beetle", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Lantern Moth", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Mine Cricket", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Tunnel Millipede", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Worm", pt:"Minhoca", loc:"Upper Mines (1–19)", r:"common"},
+    ]},
+    {name:"Tide Caverns", season:['all'], items:[
+      {n:"Coral Mantis", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Hermit Snail", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Puddle Spider", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Sea Scarab", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Waterfly", loc:"Tide Caverns (21–39)", r:"common"},
+    ]},
+    {name:"Deep Earth", season:['all'], items:[
+      {n:"Crystal Wing Moth", loc:"Deep Earth (41–59)", r:"rare"},
+      {n:"Crystalline Cricket", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Deep Earthworm", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Gem Shard Caterpillar", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Rock Roach", loc:"Deep Earth (41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves", season:['all'], items:[
+      {n:"Fire Wasp", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Cooktop Beetle", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Lava Snail", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Smoke Moth", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Diamond Beetle", loc:"Lava Caves (61–79)", r:"rare"},
+    ]},
+    {name:"Ruins", season:['all'], items:[
+      {n:"Ancient Firefly", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Giant Worm", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Hidden Beetle", loc:"Ancient Ruins (81–99)", r:"rare"},
+      {n:"Parchment Moth", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Void Snail", loc:"Ancient Ruins (81–99)", r:"common"},
+    ]},
+    {name:"Grama", season:['all'], items:[
+      {n:"Grasshopper", pt:"Gafanhoto", loc:"Mundo aberto, o dia todo", r:"common", season:['sp','su','fa']},
+      {n:"Icehopper", loc:"Mundo aberto", r:"", season:['wi']},
+      {n:"Leafhopper", loc:"Mundo aberto", r:"", season:['fa']},
+      {n:"Petalhopper", loc:"Mundo aberto, dia", r:"", season:['sp']},
+      {n:"Strawhopper", loc:"Mundo aberto, o dia todo", r:"", season:['su']},
+    ]},
+    {name:"Praia", season:['all'], items:[
+      {n:"Beach Hopper", loc:"The Beach, o dia todo", r:"common"},
+      {n:"Hermit Crab", loc:"The Beach", r:"common"},
+      {n:"Relic Crab", loc:"The Beach", r:"uncommon"},
+      {n:"Surf Beetle", loc:"The Beach", r:"common"},
+      {n:"Waterbug", loc:"The Beach", r:"common"},
+    ]},
+    {name:"Deep Woods", season:['all'], items:[
+      {n:"Windleaf Butterfly", loc:"The Deep Woods, dia", r:"common"},
+      {n:"Mote Firefly", loc:"The Deep Woods", r:""},
+      {n:"Dragon Horn Beetle", loc:"The Deep Woods", r:""},
+      {n:"Loam Caterpillar", loc:"The Deep Woods", r:""},
+      {n:"Singing Katydid", loc:"The Deep Woods", r:""},
+    ]},
+  ]},
+};
+
+// ---------- state ----------
+let state = { checked:{}, favorites:{}, notes:{}, objectives:[] };
+
+let stateLoaded = false;
+let storageBroken = false;   // true só se NEM window.storage NEM localStorage funcionarem
+let usingLocalFallback = false; // true se estiver salvando via localStorage do navegador (funciona bem!)
+const STORAGE_KEY = 'museu-app-state';
+
+async function storageGetRaw(){
+  // tenta primeiro o window.storage (nuvem da Anthropic, ideal dentro do app oficial)
+  try {
+    const result = await window.storage.get(STORAGE_KEY, false);
+    return { ok:true, value: result ? result.value : null, method:'cloud' };
+  } catch(e){
+    // se falhar, tenta o localStorage do navegador (funciona quando o arquivo é aberto fora do preview do app)
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      return { ok:true, value:v, method:'local' };
+    } catch(e2){
+      return { ok:false, value:null, method:'none' };
+    }
+  }
+}
+async function storageSetRaw(jsonStr){
+  try {
+    const result = await window.storage.set(STORAGE_KEY, jsonStr, false);
+    if (!result) throw new Error('sem confirmação do storage');
+    return { ok:true, method:'cloud' };
+  } catch(e){
+    try {
+      localStorage.setItem(STORAGE_KEY, jsonStr);
+      return { ok:true, method:'local' };
+    } catch(e2){
+      return { ok:false, method:'none' };
+    }
+  }
+}
+
+async function loadState(){
+  const res = await storageGetRaw();
+  if (res.ok && res.value){
+    try {
+      const parsed = JSON.parse(res.value);
+      state = Object.assign({checked:{}, favorites:{}, notes:{}, objectives:[]}, parsed);
+      if (state.lang) lang = state.lang;
+    } catch(e){ /* JSON inválido salvo antes — mantém estado padrão */ }
+  }
+  usingLocalFallback = (res.method === 'local');
+  storageBroken = !res.ok;
+  stateLoaded = true;
+  render();
+}
+async function saveState(){
+  if (!stateLoaded) return; // evita salvar um estado "em branco" por cima do que ainda está carregando
+  const res = await storageSetRaw(JSON.stringify(state));
+  const wasLocal = usingLocalFallback, wasBroken = storageBroken;
+  usingLocalFallback = (res.method === 'local');
+  storageBroken = !res.ok;
+  if (usingLocalFallback !== wasLocal || storageBroken !== wasBroken){
+    if (storageBroken) console.warn('Autosave indisponível: nem o storage do app nem o localStorage do navegador funcionaram aqui.');
+    render();
+  }
+}
+
+let currentWing = 'arqueologia';
+let searchTerm = '';
+let seasonFilter = 'all';
+let showOnlyPending = false;
+let showOnlyFavs = false;
+const openSets = {};
+
+function itemId(wing, si, ii){ return wing + '__' + si + '__' + ii; }
+
+function itemSeasons(set, item){
+  return item.season || set.season || ['all'];
+}
+
+function rarityLabel(r){
+  const map = {common:'Common', uncommon:'Uncommon', rare:'Rare', legendary:'Legendary', veryrare:'Very Rare'};
+  return map[r] || r || '';
+}
+
+function wingProgress(wingKey){
+  let total=0, done=0;
+  DATA[wingKey].sets.forEach((set,si)=>{
+    set.items.forEach((it,ii)=>{ total++; if(state.checked[itemId(wingKey,si,ii)]) done++; });
+  });
+  return {total, done};
+}
+function allProgress(){
+  let total=0, done=0;
+  Object.keys(DATA).forEach(w=>{ const c=wingProgress(w); total+=c.total; done+=c.done; });
+  return {total, done};
+}
+
+function wikiUrl(name){
+  const clean = name.replace(/'/g,'%27').replace(/ /g,'_');
+  return 'https://fieldsofmistria.wiki.gg/wiki/' + clean;
+}
+
+// ---------- render: tabs ----------
+function renderTabs(){
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  Object.keys(DATA).forEach(key=>{
+    const c = wingProgress(key);
+    const btn = document.createElement('div');
+    btn.className = 'tab' + (key===currentWing ? ' active':'');
+    btn.textContent = trWingLabel(DATA[key].label) + ' (' + c.done + '/' + c.total + ')';
+    btn.onclick = ()=>{ currentWing = key; render(); };
+    el.appendChild(btn);
+  });
+}
+
+// ---------- render: season filters ----------
+function renderSeasonFilters(){
+  const el = document.getElementById('season-filters');
+  el.innerHTML = '';
+  SEASON_ORDER.forEach(s=>{
+    const btn = document.createElement('div');
+    btn.className = 'chip-btn' + (seasonFilter===s ? ' active':'');
+    btn.textContent = lang==='en' ? SEASON_LABEL_EN[s] : SEASON_LABEL[s];
+    btn.onclick = ()=>{ seasonFilter = s; render(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderToggles(){
+  const p = document.getElementById('toggle-pending');
+  p.className = 'toggle-btn' + (showOnlyPending ? ' on':'');
+  p.textContent = (showOnlyPending ? '☑' : '☐') + ' ' + t('togglePending');
+  p.onclick = ()=>{ showOnlyPending = !showOnlyPending; render(); };
+
+  const f = document.getElementById('toggle-favs');
+  f.className = 'toggle-btn' + (showOnlyFavs ? ' on':'');
+  f.textContent = (showOnlyFavs ? '⭐' : '☆') + ' ' + t('toggleFavs');
+  f.onclick = ()=>{ showOnlyFavs = !showOnlyFavs; render(); };
+}
+
+// ---------- render: progress ----------
+function renderProgress(){
+  const c = allProgress();
+  document.getElementById('progress-count').textContent = c.done + ' / ' + c.total;
+  const pct = c.total ? Math.round((c.done/c.total)*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = t('progressLabel') + ' (' + pct + '%)';
+
+  const catEl = document.getElementById('cat-stats');
+  catEl.innerHTML = '';
+  Object.keys(DATA).forEach(key=>{
+    const c2 = wingProgress(key);
+    const pct2 = c2.total ? Math.round((c2.done/c2.total)*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'cat-stat-row';
+    row.innerHTML = '<div class="cat-stat-name">' + DATA[key].label + '</div>' +
+      '<div class="cat-stat-bar-bg"><div class="cat-stat-bar-fill" style="width:' + pct2 + '%"></div></div>' +
+      '<div class="cat-stat-pct">' + pct2 + '%</div>';
+    catEl.appendChild(row);
+  });
+}
+
+// ---------- render: objectives ----------
+function renderObjectives(){
+  const panel = document.getElementById('objectives-panel');
+  panel.innerHTML = '';
+  const h = document.createElement('h3');
+  h.textContent = t('objectivesTitle');
+  panel.appendChild(h);
+
+  const list = document.createElement('ul');
+  list.className = 'obj-list';
+  if (state.objectives.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'note';
+    empty.textContent = t('objectivesEmpty');
+    list.appendChild(empty);
+  }
+  state.objectives.forEach((obj, idx)=>{
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.style.flex = '1';
+    span.textContent = obj;
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.onclick = ()=>{ state.objectives.splice(idx,1); saveState(); render(); };
+    li.appendChild(span);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+  panel.appendChild(list);
+
+  const row = document.createElement('div');
+  row.className = 'obj-input-row';
+  const input = document.createElement('input');
+  input.placeholder = t('objInputPlaceholder');
+  input.id = 'new-obj-input';
+  const addBtn = document.createElement('button');
+  addBtn.textContent = t('addBtn');
+  addBtn.onclick = ()=>{
+    const v = input.value.trim();
+    if (v){ state.objectives.push(v); saveState(); render(); }
+  };
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ addBtn.click(); } });
+  row.appendChild(input);
+  row.appendChild(addBtn);
+  panel.appendChild(row);
+}
+
+// ---------- render: content ----------
+function itemMatchesSearch(set, item, term){
+  if (!term) return true;
+  const hay = [
+    item.n, item.pt||'', item.loc||'', rarityLabel(item.r), set.name,
+    (itemSeasons(set,item)||[]).map(s=>SEASON_LABEL[s]).join(' '),
+    (item.weather||[]).join(' ')
+  ].join(' ').toLowerCase();
+  return hay.includes(term);
+}
+
+function itemMatchesSeason(set, item){
+  if (seasonFilter === 'all') return true;
+  const seasons = itemSeasons(set, item);
+  return seasons.includes('all') || seasons.includes(seasonFilter);
+}
+
+function renderContent(){
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const wing = DATA[currentWing];
+  const term = searchTerm.trim().toLowerCase();
+  let anySetShown = false;
+
+  wing.sets.forEach((set, si)=>{
+    const visibleItems = set.items.filter((it, ii)=>{
+      const id = itemId(currentWing, si, ii);
+      if (showOnlyPending && state.checked[id]) return false;
+      if (showOnlyFavs && !state.favorites[id]) return false;
+      if (!itemMatchesSeason(set, it)) return false;
+      if (!itemMatchesSearch(set, it, term)) return false;
+      return true;
+    });
+
+    if (visibleItems.length === 0 && set.items.length > 0) return;
+    if (set.items.length === 0 && (showOnlyPending || showOnlyFavs || seasonFilter!=='all' || term)) return;
+
+    anySetShown = true;
+    const doneCount = set.items.filter((it,ii)=>state.checked[itemId(currentWing,si,ii)]).length;
+    const isComplete = set.items.length>0 && doneCount === set.items.length;
+    const key = currentWing + '_' + si;
+    const isOpen = openSets[key] || !!term || seasonFilter!=='all' || showOnlyPending || showOnlyFavs;
+
+    const card = document.createElement('div');
+    card.className = 'set-card' + (isComplete ? ' complete' : '');
+
+    const header = document.createElement('div');
+    header.className = 'set-header' + (isComplete ? ' complete-bg' : '');
+    header.innerHTML = '<span>' + trSetName(set.name) + (isComplete ? '<span class="complete-badge">' + t('completeBadge') + '</span>' : '') + '</span>' +
+      '<span class="count">' + doneCount + '/' + set.items.length + '</span>';
+    header.onclick = ()=>{ openSets[key] = !openSets[key]; render(); };
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'set-body' + (isOpen ? ' open' : '');
+
+    if (set.note){
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = '⚠️ ' + trFreeText(set.note);
+      body.appendChild(note);
+    }
+
+    if (set.items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'note';
+      empty.textContent = t('noItemsYet');
+      body.appendChild(empty);
+    }
+
+    set.items.forEach((it, ii)=>{
+      const id = itemId(currentWing, si, ii);
+      if (showOnlyPending && state.checked[id]) return;
+      if (showOnlyFavs && !state.favorites[id]) return;
+      if (!itemMatchesSeason(set, it)) return;
+      if (!itemMatchesSearch(set, it, term)) return;
+
+      const isChecked = !!state.checked[id];
+      const isFav = !!state.favorites[id];
+
+      const row = document.createElement('div');
+      row.className = 'item-row';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = isChecked;
+      cb.onchange = ()=>{ state.checked[id] = cb.checked; saveState(); render(); };
+      row.appendChild(cb);
+
+      const main = document.createElement('div');
+      main.className = 'item-main';
+
+      const topLine = document.createElement('div');
+      topLine.className = 'item-top-line';
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'item-name' + (isChecked ? ' done' : '');
+      nameSpan.textContent = lang==='half' ? (it.n + (it.pt ? ' (' + it.pt + ')' : '')) : trItemName(it);
+      topLine.appendChild(nameSpan);
+
+      const favBtn = document.createElement('button');
+      favBtn.className = 'fav-btn';
+      favBtn.textContent = isFav ? '⭐' : '☆';
+      favBtn.onclick = ()=>{ state.favorites[id] = !isFav; saveState(); render(); };
+      topLine.appendChild(favBtn);
+      main.appendChild(topLine);
+
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+      const seasons = itemSeasons(set, it);
+      seasons.forEach(s=>{
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = lang==='en' ? SEASON_LABEL_EN[s] : SEASON_LABEL[s];
+        chips.appendChild(c);
+      });
+      if (it.loc){
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = '📍 ' + trFreeText(it.loc);
+        chips.appendChild(c);
+      }
+      (it.weather||[]).forEach(w=>{
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = trFreeText(w);
+        chips.appendChild(c);
+      });
+      if (it.r){
+        const c = document.createElement('span');
+        c.className = 'chip badge-rarity badge-' + it.r;
+        c.textContent = rarityLabel(it.r);
+        chips.appendChild(c);
+      }
+      main.appendChild(chips);
+
+      const actions = document.createElement('div');
+      actions.className = 'item-actions';
+      const link = document.createElement('a');
+      link.className = 'wiki-link';
+      link.href = wikiUrl(it.n);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = t('wikiLink');
+      actions.appendChild(link);
+
+      const addObjBtn = document.createElement('button');
+      addObjBtn.className = 'add-obj-btn';
+      addObjBtn.textContent = t('addObjBtn');
+      addObjBtn.onclick = ()=>{
+        state.objectives.push(t('donatePrefix') + it.n);
+        saveState(); render();
+      };
+      actions.appendChild(addObjBtn);
+      main.appendChild(actions);
+
+      const noteInput = document.createElement('input');
+      noteInput.className = 'note-input';
+      noteInput.placeholder = t('notePlaceholder');
+      noteInput.value = state.notes[id] || '';
+      noteInput.addEventListener('change', ()=>{
+        state.notes[id] = noteInput.value;
+        saveState();
+      });
+      main.appendChild(noteInput);
+
+      row.appendChild(main);
+      body.appendChild(row);
+    });
+
+    card.appendChild(body);
+    content.appendChild(card);
+  });
+
+  if (!anySetShown){
+    const empty = document.createElement('div');
+    empty.className = 'empty-msg';
+    empty.textContent = t('noResults');
+    content.appendChild(empty);
+  }
+}
+
+function renderStaticUI(){
+  document.getElementById('app-title').textContent = t('title');
+  document.getElementById('app-subtitle').textContent = t('subtitle');
+  document.getElementById('search').placeholder = t('searchPlaceholder');
+  document.getElementById('btn-export').textContent = t('exportBtn');
+  document.querySelector('label[for="import-file"]').textContent = t('importBtn');
+  document.querySelectorAll('#lang-switch .lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  const warnEl = document.getElementById('storage-warning');
+  warnEl.classList.toggle('show', storageBroken || usingLocalFallback);
+  warnEl.classList.toggle('info', !storageBroken && usingLocalFallback);
+  if (storageBroken){
+    warnEl.innerHTML = t('storageBrokenMsg');
+  } else if (usingLocalFallback){
+    warnEl.innerHTML = t('storageLocalMsg');
+  }
+}
+
+function render(){
+  renderStaticUI();
+  renderTabs();
+  renderSeasonFilters();
+  renderToggles();
+  renderProgress();
+  renderObjectives();
+  renderContent();
+}
+
+document.querySelectorAll('#lang-switch .lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    lang = btn.getAttribute('data-lang');
+    state.lang = lang;
+    saveState();
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  render();
+});
+
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'museu-mistria-progresso.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-file').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      state = Object.assign({checked:{}, favorites:{}, notes:{}, objectives:[]}, parsed);
+      saveState();
+      render();
+      alert(t('importSuccess'));
+    } catch(err){
+      alert(t('importError'));
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+loadState();
+</script>
+</body>
+</html>
