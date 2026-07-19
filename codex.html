@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Museu de Fields of Mistria — Checklist</title>
+<style>
+  :root{
+    --bg:#1e1b2e; --card:#2a2540; --accent:#e8b86d; --accent2:#8fd3a3;
+    --text:#f1ecf9; --muted:#b3a9c9; --border:#3d3660;
+    --c-common:#7fce9a; --c-uncommon:#7ea8e0; --c-rare:#b48ef0; --c-legendary:#f0b94e; --c-veryrare:#f07a7a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text);
+    padding:12px; max-width:900px; margin:0 auto; padding-bottom:60px;
+  }
+  h1{font-size:1.25rem; margin:6px 0 2px 0}
+  .sub{color:var(--muted); font-size:0.8rem; margin-bottom:12px}
+  .sticky-top{position:sticky; top:0; background:var(--bg); z-index:10; padding-top:4px; padding-bottom:4px}
+  .tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px}
+  .tab{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:9px 14px; border-radius:20px; cursor:pointer; font-size:0.82rem; font-weight:600;
+    min-height:36px; display:flex; align-items:center;
+  }
+  .tab.active{background:var(--accent); color:#2a2340; border-color:var(--accent)}
+  .filter-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; align-items:center}
+  .chip-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:7px 12px; border-radius:16px; cursor:pointer; font-size:0.78rem; font-weight:600;
+    min-height:34px; display:flex; align-items:center; gap:4px;
+  }
+  .chip-btn.active{background:var(--accent2); color:#16301f; border-color:var(--accent2)}
+  .toggle-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:7px 12px; border-radius:16px; cursor:pointer; font-size:0.78rem; font-weight:600;
+    min-height:34px; display:flex; align-items:center; gap:6px;
+  }
+  .toggle-btn.on{background:#e08fa0; color:#2a1420; border-color:#e08fa0}
+  .header-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .lang-switch{display:flex; gap:4px; flex-shrink:0; margin-top:4px}
+  .lang-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--muted);
+    padding:5px 9px; border-radius:8px; cursor:pointer; font-size:0.7rem; font-weight:700;
+  }
+  .lang-btn.active{background:var(--accent); color:#2a2340; border-color:var(--accent)}
+  .storage-warning{
+    background:#4a2a2a; border:1px solid #a05050; color:#f2c8c8; border-radius:10px;
+    padding:10px 14px; margin-bottom:10px; font-size:0.8rem; display:none;
+  }
+  .storage-warning.show{display:block}
+  .storage-warning b{color:#ffdede}
+  .storage-warning.info{background:#213a4a; border:1px solid #4f88a8; color:#c9e6f5}
+  .storage-warning.info b{color:#eaf7ff}
+  .search-box{
+    width:100%; padding:11px 12px; border-radius:8px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); margin-bottom:8px; font-size:0.95rem;
+  }
+  .progress-wrap{background:var(--card); border-radius:10px; padding:10px 14px; margin-bottom:10px; border:1px solid var(--border)}
+  .progress-bar-bg{background:#171428; border-radius:6px; height:10px; overflow:hidden; margin-top:6px}
+  .progress-bar-fill{background:linear-gradient(90deg,var(--accent2),var(--accent)); height:100%; width:0%; transition:width .3s}
+  .cat-stats{display:flex; flex-direction:column; gap:6px; margin-bottom:4px}
+  .cat-stat-row{display:flex; align-items:center; gap:8px; font-size:0.78rem}
+  .cat-stat-name{width:90px; flex-shrink:0; color:var(--muted)}
+  .cat-stat-bar-bg{flex:1; background:#171428; border-radius:5px; height:8px; overflow:hidden}
+  .cat-stat-bar-fill{height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent))}
+  .cat-stat-pct{width:38px; text-align:right; color:var(--muted)}
+
+  .objectives{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:10px}
+  .objectives h3{margin:0 0 6px 0; font-size:0.9rem}
+  .obj-list{list-style:none; padding:0; margin:0}
+  .obj-list li{display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.85rem; border-top:1px solid var(--border)}
+  .obj-list li:first-child{border-top:none}
+  .obj-list button{background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem}
+  .obj-input-row{display:flex; gap:6px; margin-top:6px}
+  .obj-input-row input{flex:1; padding:8px; border-radius:6px; border:1px solid var(--border); background:#171428; color:var(--text)}
+  .obj-input-row button{padding:8px 12px; border-radius:6px; border:none; background:var(--accent); color:#2a2340; font-weight:700; cursor:pointer}
+
+  .set-card{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    margin-bottom:10px; overflow:hidden;
+  }
+  .set-card.complete{border-color:var(--accent2)}
+  .set-header{
+    padding:12px 14px; display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer; font-weight:700; font-size:0.92rem; min-height:44px; gap:8px; flex-wrap:wrap;
+  }
+  .set-header.complete-bg{background:rgba(143,211,163,0.15)}
+  .set-header .count{color:var(--muted); font-weight:400; font-size:0.78rem}
+  .set-bulk-btn{
+    background:#171428; border:1px solid var(--border); color:var(--muted);
+    padding:5px 8px; border-radius:8px; cursor:pointer; font-size:0.68rem; font-weight:600;
+    min-height:30px;
+  }
+  .set-bulk-btn:hover{color:var(--text); border-color:var(--accent2)}
+  .select-all-row{
+    display:flex; align-items:center; gap:10px; padding:8px 2px 10px 2px;
+    border-bottom:1px solid var(--border); margin-bottom:4px; font-size:0.8rem;
+    color:var(--muted); font-weight:600;
+  }
+  .select-all-row input[type=checkbox]{width:20px; height:20px; accent-color:var(--accent2)}
+  .complete-badge{color:var(--accent2); font-size:0.75rem; font-weight:700; margin-left:6px}
+  .set-body{padding:0 12px 10px 12px; display:none}
+  .set-body.open{display:block}
+  .item-row{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 2px; border-top:1px solid var(--border);
+    font-size:0.87rem;
+  }
+  .item-row:first-child{border-top:none}
+  .item-row input[type=checkbox]{width:24px; height:24px; flex-shrink:0; accent-color:var(--accent2); margin-top:2px}
+  .item-main{flex:1; min-width:0}
+  .item-top-line{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+  .item-icon{
+    width:28px; height:28px; object-fit:contain; flex-shrink:0;
+    background:#171428; border-radius:6px; padding:2px;
+  }
+  .item-name{font-weight:700}
+  .item-name.done{text-decoration:line-through; color:var(--muted)}
+  .fav-btn{background:none; border:none; cursor:pointer; font-size:1.05rem; padding:2px 4px; flex-shrink:0}
+  .chips{display:flex; flex-wrap:wrap; gap:5px; margin-top:5px}
+  .chip{
+    font-size:0.7rem; padding:2px 8px; border-radius:10px; background:#171428; color:var(--muted);
+    display:inline-flex; align-items:center; gap:3px; white-space:nowrap;
+  }
+  .badge-rarity{font-weight:700; color:#16150f}
+  .badge-common{background:var(--c-common)}
+  .badge-uncommon{background:var(--c-uncommon)}
+  .badge-rare{background:var(--c-rare)}
+  .badge-legendary{background:var(--c-legendary)}
+  .badge-veryrare{background:var(--c-veryrare)}
+  .item-actions{display:flex; gap:8px; margin-top:6px; align-items:center}
+  .wiki-link{font-size:0.72rem; color:var(--accent); text-decoration:none; border:1px solid var(--border); padding:3px 8px; border-radius:8px}
+  .add-obj-btn{font-size:0.72rem; color:var(--accent2); background:none; border:1px solid var(--border); padding:3px 8px; border-radius:8px; cursor:pointer}
+  .note-input{
+    width:100%; margin-top:6px; padding:6px 8px; font-size:0.78rem; border-radius:6px;
+    border:1px solid var(--border); background:#171428; color:var(--text);
+  }
+  .note{color:var(--muted); font-size:0.78rem; margin-top:2px; font-style:italic}
+  .empty-msg{color:var(--muted); font-size:0.85rem; text-align:center; padding:20px 0}
+  .export-row{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap}
+  .export-row button, .export-row label{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:8px 12px; border-radius:8px; cursor:pointer; font-size:0.78rem; font-weight:600;
+  }
+  input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="header-row">
+  <div>
+    <h1 id="app-title">🏛️ Museu de Fields of Mistria</h1>
+    <div class="sub" id="app-subtitle">Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.</div>
+  </div>
+  <div class="lang-switch" id="lang-switch">
+    <div class="lang-btn" data-lang="en">EN</div>
+    <div class="lang-btn" data-lang="pt">PT</div>
+  </div>
+</div>
+
+<div class="storage-warning" id="storage-warning"></div>
+
+<div class="objectives" id="objectives-panel"></div>
+
+<div class="progress-wrap">
+  <div style="display:flex;justify-content:space-between;font-size:0.85rem">
+    <span id="progress-label">Progresso geral</span>
+    <span id="progress-count">0 / 0</span>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="cat-stats" id="cat-stats" style="margin-top:10px"></div>
+</div>
+
+<div class="export-row">
+  <button id="btn-export">⬇️ Exportar progresso</button>
+  <label for="import-file">⬆️ Importar progresso</label>
+  <input type="file" id="import-file" accept=".json">
+</div>
+
+<div class="sticky-top">
+  <div class="tabs" id="tabs"></div>
+  <input class="search-box" id="search" placeholder="🔍 Buscar item, local, clima, estação, raridade...">
+  <div class="filter-row" id="season-filters"></div>
+  <div class="filter-row" id="weather-filters"></div>
+  <div class="filter-row">
+    <div class="toggle-btn" id="toggle-pending">☐ Só pendentes</div>
+    <div class="toggle-btn" id="toggle-favs">☆ Só favoritos</div>
+  </div>
+</div>
+
+<div id="content"></div>
+
+<script>
+const SEASON_LABEL = {sp:'🌸 Primavera', su:'☀️ Verão', fa:'🍂 Outono', wi:'❄️ Inverno', all:'🔄 Todas'};
+const SEASON_LABEL_EN = {sp:'🌸 Spring', su:'☀️ Summer', fa:'🍂 Fall', wi:'❄️ Winter', all:'🔄 All'};
+const SEASON_ORDER = ['all','sp','su','fa','wi'];
+const WEATHER_LABEL = {all:'🔄 Qualquer clima', rain:'🌧 Chuva', snow:'❄️ Neve/Nevasca', storm:'⛈ Tempestade', wind:'🍃 Vento'};
+const WEATHER_LABEL_EN = {all:'🔄 Any weather', rain:'🌧 Rain', snow:'❄️ Snow/Blizzard', storm:'⛈ Storm', wind:'🍃 Wind'};
+const WEATHER_ORDER = ['all','rain'];
+
+// ============ LANGUAGE SYSTEM (adds EN and full-PT modes; "half" = original unchanged) ============
+let lang = 'pt'; // 'pt' | 'en'
+
+const UI_TEXT = {
+  title: {half:"🏛️ Museu de Fields of Mistria", pt:"🏛️ Museu de Fields of Mistria", en:"🏛️ Fields of Mistria Museum"},
+  subtitle: {half:"Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.", pt:"Checklist de doações — marque, filtre, favorite e anote. Tudo salvo automaticamente.", en:"Donation checklist — check off, filter, favorite and take notes. Everything saves automatically."},
+  objectivesTitle: {half:"🎯 Objetivos de Hoje", pt:"🎯 Objetivos de Hoje", en:"🎯 Today's Objectives"},
+  objectivesEmpty: {half:"Nenhum objetivo ainda. Adicione abaixo ou clique em ➕ em um item.", pt:"Nenhum objetivo ainda. Adicione abaixo ou clique em ➕ em um item.", en:"No objectives yet. Add one below or click ➕ on an item."},
+  objInputPlaceholder: {half:"Novo objetivo...", pt:"Novo objetivo...", en:"New objective..."},
+  addBtn: {half:"Adicionar", pt:"Adicionar", en:"Add"},
+  progressLabel: {half:"Progresso geral", pt:"Progresso geral", en:"Overall progress"},
+  exportBtn: {half:"⬇️ Exportar progresso", pt:"⬇️ Exportar progresso", en:"⬇️ Export progress"},
+  importBtn: {half:"⬆️ Importar progresso", pt:"⬆️ Importar progresso", en:"⬆️ Import progress"},
+  searchPlaceholder: {half:"🔍 Buscar item, local, clima, estação, raridade...", pt:"🔍 Buscar item, local, clima, estação, raridade...", en:"🔍 Search item, location, weather, season, rarity..."},
+  togglePending: {half:"Só pendentes", pt:"Só pendentes", en:"Pending only"},
+  toggleFavs: {half:"Só favoritos", pt:"Só favoritos", en:"Favorites only"},
+  completeBadge: {half:"✔ Completo", pt:"✔ Completo", en:"✔ Complete"},
+  noItemsYet: {half:"Sem itens cadastrados ainda.", pt:"Sem itens cadastrados ainda.", en:"No items registered yet."},
+  noResults: {half:"Nenhum item encontrado com esses filtros. 🔎", pt:"Nenhum item encontrado com esses filtros. 🔎", en:"No items found with these filters. 🔎"},
+  notePlaceholder: {half:"📝 Anotação (opcional)...", pt:"📝 Anotação (opcional)...", en:"📝 Note (optional)..."},
+  wikiLink: {half:"🔗 Wiki", pt:"🔗 Wiki", en:"🔗 Wiki"},
+  addObjBtn: {half:"➕ Objetivo", pt:"➕ Objetivo", en:"➕ Objective"},
+  donatePrefix: {half:"Doar: ", pt:"Doar: ", en:"Donate: "},
+  importSuccess: {half:"Progresso importado com sucesso!", pt:"Progresso importado com sucesso!", en:"Progress imported successfully!"},
+  importError: {half:"Erro ao importar arquivo. Verifique se é um JSON válido exportado por esta ferramenta.", pt:"Erro ao importar arquivo. Verifique se é um JSON válido exportado por esta ferramenta.", en:"Error importing file. Make sure it's a valid JSON file exported by this tool."},
+  checkAllBtn: {half:"✔️ Marcar tudo", pt:"✔️ Marcar tudo", en:"✔️ Check all"},
+  uncheckAllBtn: {half:"✖️ Desmarcar tudo", pt:"✖️ Desmarcar tudo", en:"✖️ Uncheck all"},
+  selectAllLabel: {half:"Marcar/desmarcar todos os itens", pt:"Marcar/desmarcar todos os itens", en:"Check/uncheck all items"},
+  storageBrokenMsg: {half:"⚠️ <b>Salvamento automático indisponível</b> aqui (nem a nuvem do app, nem o armazenamento do navegador funcionaram). Use <b>⬇️ Exportar progresso</b> antes de sair e <b>⬆️ Importar progresso</b> quando voltar.", pt:"⚠️ <b>Salvamento automático indisponível</b> aqui (nem a nuvem do app, nem o armazenamento do navegador funcionaram). Use <b>⬇️ Exportar progresso</b> antes de sair e <b>⬆️ Importar progresso</b> quando voltar.", en:"⚠️ <b>Autosave unavailable</b> here (neither the app's cloud storage nor the browser's local storage worked). Use <b>⬇️ Export progress</b> before leaving and <b>⬆️ Import progress</b> when you come back."},
+  storageLocalMsg: {half:"💾 Salvando localmente neste navegador (não na nuvem do app). Se abrir em outro dispositivo ou navegador, use <b>⬇️ Exportar</b> / <b>⬆️ Importar</b> para levar seu progresso junto.", pt:"💾 Salvando localmente neste navegador (não na nuvem do app). Se abrir em outro dispositivo ou navegador, use <b>⬇️ Exportar</b> / <b>⬆️ Importar</b> para levar seu progresso junto.", en:"💾 Saving locally in this browser (not in the app's cloud). If you open this on another device or browser, use <b>⬇️ Export</b> / <b>⬆️ Import</b> to bring your progress with you."},
+};
+function t(key){ return UI_TEXT[key][lang]; }
+
+const WING_LABEL_EN = {
+  "🏺 Arqueologia": "🏺 Archaeology", "🐟 Peixes": "🐟 Fish", "🌸 Flora": "🌸 Flora", "🦋 Insetos": "🦋 Insects",
+};
+function trWingLabel(label){ return lang==='en' ? (WING_LABEL_EN[label] || label) : label; }
+
+const SET_NAME_PT = {
+  // Arqueologia
+  "Aldarian Artifact Set":"Conjunto de Artefatos Aldarianos",
+  "Caldosian Artifact Set":"Conjunto de Artefatos Caldosianos",
+  "Alda Artifact Set":"Conjunto de Artefatos Alda",
+  "Ancient Artifact Set":"Conjunto de Artefatos Antigos",
+  "Prehistoric Artifact Set":"Conjunto de Artefatos Pré-históricos",
+  "Oopart Artifact Set":"Conjunto de Artefatos Oopart",
+  "Aquatic Artifact Set":"Conjunto de Artefatos Aquáticos",
+  "Sunken Artifact Set":"Conjunto de Artefatos Submersos",
+  "Buried Artifact Set":"Conjunto de Artefatos Enterrados",
+  "Upper Mines Artifact Set":"Conjunto de Artefatos das Minas Superiores",
+  "Tide Caverns Artifact Set":"Conjunto de Artefatos das Cavernas das Marés",
+  "Deep Earth Artifact Set":"Conjunto de Artefatos das Profundezas",
+  "Lava Caves Artifact Set":"Conjunto de Artefatos das Cavernas de Lava",
+  "Dragon Artifact Set":"Conjunto de Artefatos do Dragão",
+  "Ritual Artifact Set":"Conjunto de Artefatos Rituais",
+  "Mist Artifact Set":"Conjunto de Artefatos da Névoa",
+  "Vintage Farm Tools Set":"Conjunto de Ferramentas Agrícolas Antigas",
+  "Metals of Mistria Set":"Conjunto de Metais de Mistria",
+  "Gems of Mistria Set":"Conjunto de Gemas de Mistria",
+  "Deep Woods Artifact Set":"Conjunto de Artefatos do Bosque Profundo",
+  "Fish Trap Artifact Set":"Conjunto de Artefatos da Armadilha de Peixe",
+  "Dig Site Material Set":"Conjunto de Materiais do Sítio de Escavação",
+  // Peixes
+  "Multi-Season Fish Set":"Conjunto de Peixes Multi-Estação",
+  "Spring River Fish Set":"Conjunto de Peixes do Rio (Primavera)",
+  "Spring Pond Fish Set":"Conjunto de Peixes da Lagoa (Primavera)",
+  "Spring Ocean Fish Set":"Conjunto de Peixes do Oceano (Primavera)",
+  "Summer River Fish Set":"Conjunto de Peixes do Rio (Verão)",
+  "Summer Pond Fish Set":"Conjunto de Peixes da Lagoa (Verão)",
+  "Summer Ocean Fish Set":"Conjunto de Peixes do Oceano (Verão)",
+  "Fall River Fish Set":"Conjunto de Peixes do Rio (Outono)",
+  "Fall Pond Fish Set":"Conjunto de Peixes da Lagoa (Outono)",
+  "Fall Ocean Fish Set":"Conjunto de Peixes do Oceano (Outono)",
+  "Winter River Fish Set":"Conjunto de Peixes do Rio (Inverno)",
+  "Winter Pond Fish Set":"Conjunto de Peixes da Lagoa (Inverno)",
+  "Winter Ocean Fish Set":"Conjunto de Peixes do Oceano (Inverno)",
+  "Fish Bait Set":"Conjunto de Isca de Peixe",
+  "Fish Trap Set":"Conjunto da Armadilha de Peixe",
+  "Deep Woods Fish Set":"Conjunto de Peixes do Bosque Profundo",
+  "Upper Mines Fish Set":"Conjunto de Peixes das Minas Superiores",
+  "Tide Caverns Fish Set":"Conjunto de Peixes das Cavernas das Marés",
+  "Deep Earth Fish Set":"Conjunto de Peixes das Profundezas",
+  "Lava Caves Fish Set":"Conjunto de Peixes das Cavernas de Lava",
+  "Ruins Fish Set":"Conjunto de Peixes das Ruínas",
+  "Legendary Fish Set":"Conjunto de Peixes Lendários",
+  // Flora
+  "Spring Crop Set":"Conjunto de Colheita da Primavera",
+  "Spring Flower Set":"Conjunto de Flores da Primavera",
+  "Spring Forage Set":"Conjunto de Forragem da Primavera",
+  "Summer Crop Set":"Conjunto de Colheita do Verão",
+  "Summer Flower Set":"Conjunto de Flores do Verão",
+  "Summer Forage Set":"Conjunto de Forragem do Verão",
+  "Fall Crop Set":"Conjunto de Colheita do Outono",
+  "Fall Flower Set":"Conjunto de Flores do Outono",
+  "Fall Forage Set":"Conjunto de Forragem do Outono",
+  "Winter Crop Set":"Conjunto de Colheita do Inverno",
+  "Winter Flower Set":"Conjunto de Flores do Inverno",
+  "Winter Forage Set":"Conjunto de Forragem do Inverno",
+  "Deep Woods Forage Set":"Conjunto de Forragem do Bosque Profundo",
+  "Upper Mines Forage Set":"Conjunto de Forragem das Minas Superiores",
+  "Tide Caverns Forage Set":"Conjunto de Forragem das Cavernas das Marés",
+  "Deep Earth Forage Set":"Conjunto de Forragem das Profundezas",
+  "Lava Caves Forage Set":"Conjunto de Forragem das Cavernas de Lava",
+  "Ruins Forage Set":"Conjunto de Forragem das Ruínas",
+  "Void Forage Set":"Conjunto de Forragem do Vazio",
+  // Insetos
+  "Multi-Season Insect Set":"Conjunto de Insetos Multi-Estação",
+  "Spring Insect Set":"Conjunto de Insetos da Primavera",
+  "Summer Insect Set":"Conjunto de Insetos do Verão",
+  "Fall Insect Set":"Conjunto de Insetos do Outono",
+  "Winter Insect Set":"Conjunto de Insetos do Inverno",
+  "Bee Insect Set":"Conjunto de Abelhas",
+  "Bug Pheromone Insect Set":"Conjunto de Feromônios de Inseto",
+  "Rare Insect Set":"Conjunto de Insetos Raros",
+  "Legendary Insect Set":"Conjunto de Insetos Lendários",
+  "Upper Mines Insect Set":"Conjunto de Insetos das Minas Superiores",
+  "Tide Caverns Insect Set":"Conjunto de Insetos das Cavernas das Marés",
+  "Deep Earth Insect Set":"Conjunto de Insetos das Profundezas",
+  "Lava Caves Insect Set":"Conjunto de Insetos das Cavernas de Lava",
+  "Ruins Insect Set":"Conjunto de Insetos das Ruínas",
+  "Grass Insect Set":"Conjunto de Insetos da Grama",
+  "Beach Insect Set":"Conjunto de Insetos da Praia",
+  "Deep Woods Insect Set":"Conjunto de Insetos do Bosque Profundo",
+};
+// Os nomes-base em DATA já são os nomes oficiais em inglês (iguais aos da wiki),
+// então no modo EN não precisa traduzir nada; no modo PT, busca a tradução acima.
+function trSetName(name){ return lang==='pt' ? (SET_NAME_PT[name] || name) : name; }
+
+const PHRASE_PAIRS_EN = [
+  ["Locais de escavação","Digging spots"], ["escavação geral","general digging"], ["escavação","digging spot"],
+  ["Pescando","Fishing"], ["Mergulhando","Diving"], ["Sua Fazenda","Your Farm"],
+  ["Qualquer local de pesca","Any fishing spot"], ["Qualquer local","Any location"],
+  ["Mundo aberto, o dia todo","Open world, all day"], ["Mundo aberto, dia","Open world, day"],
+  ["Mundo aberto, noite","Open world, night"], ["Mundo aberto (requer Bug Pheromones)","Open world (requires Bug Pheromones)"],
+  ["Mundo aberto","Open world"], ["Requer Bug Pheromones","Requires Bug Pheromones"], ["o dia todo","all day"],
+  ["Plantio ou árvore em","Farming or tree at"], ["Plantio ou cabana do Errol,","Farming or Errol's cabin,"],
+  ["Plantio ou","Farming or"], ["Plantio","Farming"],
+  ["Spawn aleatório, sem área fixa","Random spawn, no fixed spot"],
+  ["Perto do Wishing Well","Near the Wishing Well"], ["Ruínas em","Ruins at"],
+  ["Arbustos perto do gazebo,","Bushes near the gazebo,"], ["norte","north"],
+  ["Faltam 3 itens deste conjunto. Confira o wiki.","Missing 3 items from this set. Check the wiki."],
+  ["Lista incompleta — faltam itens. Confira o wiki.","Incomplete list — missing items. Check the wiki."],
+  ["Lista incompleta — falta itens. Confira o wiki.","Incomplete list — missing items. Check the wiki."],
+  ["Sem dados coletados — confira o wiki.","No data collected — check the wiki."],
+  ["Conjunto novo — sem dados disponíveis no wiki ainda.","New set — no data available on the wiki yet."],
+  ["Conjunto com 4 itens (exceção às regras de 5).","Set with 4 items (exception to the rule of 5)."],
+  ["🌧 Chuva/❄️ Neve","🌧 Rain/❄️ Snow"], ["🌧 Chuva","🌧 Rain"],
+  ["❄️ Neve/Nevasca","❄️ Snow/Blizzard"], ["❄️ Nevasca","❄️ Blizzard"], ["❄️ Neve","❄️ Snow"],
+  ["⛈ Tempestade","⛈ Storm"], ["🍃 Vento (pétalas)","🍃 Wind (petals)"], ["🍃 Vento (folhas)","🍃 Wind (leaves)"],
+  ["🍃 Vento","🍃 Wind"], ["Lagoa","Pond"], ["Rio","River"], ["Oceano","Ocean"],
+];
+function trFreeText(text){
+  if (lang !== 'en' || !text) return text;
+  let out = text;
+  PHRASE_PAIRS_EN.forEach(([ptp, enp])=>{ out = out.split(ptp).join(enp); });
+  return out;
+}
+
+const NAME_OVERRIDES_PT = {
+  "trout":"Truta","carp":"Carpa","salmon":"Salmão","crab":"Caranguejo","shrimp":"Camarão","lobster":"Lagosta",
+  "shark":"Tubarão","eel":"Enguia","herring":"Arenque","perch":"Perca","catfish":"Bagre","tilapia":"Tilápia",
+  "butterfly":"Borboleta","caterpillar":"Lagarta","ladybug":"Joaninha","cricket":"Grilo","firefly":"Vaga-lume",
+  "dragonfly":"Libélula","cicada":"Cigarra","ant":"Formiga","bumblebee":"Mamangava","spider":"Aranha",
+  "snail":"Caracol","worm":"Minhoca","beetle":"Besouro","moth":"Mariposa","mantis":"Louva-a-deus",
+};
+const WORD_MAP_PT = {
+  "aldarian":"aldariana","caldosian":"caldosiana","gauntlet":"manopla","sword":"espada","war":"de guerra",
+  "banner":"bandeira","family":"da família","crest":"brasão","pendant":"pingente","lost":"perdida","crown":"coroa",
+  "breastplate":"peitoral","drinking":"de beber","horn":"chifre","emperor":"do imperador","bust":"busto",
+  "statuette":"estatueta","bronze":"de bronze","clay":"de argila","pot":"pote","feather":"de pena","gem":"gema",
+  "bracelet":"bracelete","mural":"mural","tablet":"tábua","crystal":"de cristal","goblet":"cálice","gold":"de ouro",
+  "coin":"moeda","circlet":"diadema","royal":"real","scepter":"cetro","stone":"pedra","lantern":"lanterna",
+  "amber":"âmbar","trapped":"presa","insect":"inseto","fossilized":"fossilizado","egg":"ovo","meteorite":"meteorito",
+  "tiny":"pequeno","dinosaur":"de dinossauro","skeleton":"esqueleto","trilobite":"trilobita","fossil":"fóssil",
+  "black":"negra","completely":"totalmente","wrong":"errado","map":"mapa","muttering":"resmungante","cube":"cubo",
+  "unknown":"desconhecida","dragon":"de dragão","weightless":"sem peso","lump":"pedaço","giant":"gigante",
+  "fish":"de peixe","scale":"escama","rubber":"de borracha","rusted":"enferrujado","treasure":"do tesouro",
+  "chest":"baú","water":"de água","sphere":"esfera","criminal":"criminosa","confession":"confissão",
+  "comb":"pente","rainbow":"arco-íris","seaweed":"alga","rock":"pedra","hole":"buraco","shield":"escudo",
+  "mirror":"espelho","flint":"de sílex","arrowhead":"ponta de flecha","obsidian":"de obsidiana","blade":"lâmina",
+  "shortcut":"de atalho","scroll":"pergaminho","horse":"cavalo","helmet":"capacete","pickaxe":"picareta",
+  "rucksack":"mochila","slab":"laje","tin":"de lata","lunchbox":"lancheira","crab":"de caranguejo","statue":"estátua",
+  "dense":"densa","starlight":"da luz das estrelas","coral":"coral","shell":"concha","earth":"da terra","infused":"imbuída",
+  "faceted":"facetada","really":"bem","round":"redonda","seriously":"bem","square":"quadrada","fire":"de fogo",
+  "geode":"geodo","red":"vermelha","volcano":"vulcão","warm":"quente","claw":"garra","forged":"forjado","pact":"pacto",
+  "hardened":"endurecida","essence":"essência","beads":"contas","chalice":"cálice","incense":"de incenso",
+  "burner":"queimador","flute":"flauta","misty":"nebuloso","quill":"pena de escrever","brush":"escova","cow":"de vaca",
+  "bell":"sino","hammer":"martelo","sickle":"foice","watering":"regador","can":"lata","perfect":"perfeito",
+  "copper":"de cobre","ore":"minério","iron":"de ferro","silver":"de prata","ruby":"rubi","sapphire":"safira",
+  "emerald":"esmeralda","diamond":"diamante","pink":"rosa","apple":"maçã","mandrake":"de mandrágora","root":"raiz",
+  "gathering":"de coleta","basket":"cesta","metal":"de metal","leaf":"folha","petrified":"petrificada","wood":"madeira",
+  "amphora":"ânfora","message":"mensagem","bottle":"garrafa","koi":"carpa-koi","pike":"lúcio","bass":"robalo",
+  "bluegill":"perca-azul","chub":"peixe-chub","paddlefish":"peixe-espátula","walleye":"peixe-lobo","angel":"anjo",
+  "barb":"barbo","goldfish":"peixe-dourado","anchovy":"anchova","mackerel":"cavala","sunfish":"peixe-lua",
+  "bream":"brema","loach":"peixe-linguado","minnow":"peixinho","sweetfish":"ayu","tarpon":"tarpão","bullhead":"bagrinho",
+  "shiner":"peixe-prateado","sauger":"peixe-lúcio-perca","char":"salmão-alpino","dart":"peixe-flecha","grouper":"garoupa",
+  "stingray":"arraia","grayling":"peixe-tímalo","lamprey":"lampreia","razorback":"peixe-lombo-afiado","shad":"savelha",
+  "bluefish":"peixe-azul","killifish":"peixinho-anual","striped":"listrado","butterfish":"peixe-manteiga",
+  "halibut":"linguado-gigante","mullet":"tainha","saury":"peixe-agulha","bowfish":"peixe-arco","dace":"peixe-dace",
+  "freshwater":"de água doce","gar":"peixe-jacaré","burbot":"peixe-lota","flathead":"cabeça-chata","alligator":"jacaré",
+  "lance":"peixe-lança","sand":"de areia","king":"rei","oar":"peixe-remo","cave":"da caverna","guppy":"guppy",
+  "archer":"peixe-arqueiro","betta":"betta","transparent":"transparente","jellyfish":"água-viva","balloon":"balão",
+  "charger":"carregador","rockbiter":"mordedor-de-pedra","shardfin":"barbatana-de-caco","armored":"blindado",
+  "seadragon":"dragão-do-mar","firesail":"vela-de-fogo","piranha":"piranha","sulfur":"de enxofre","winged":"alado",
+  "gazer":"observador","luminescent":"luminescente","coelacanth":"celacanto","cherry":"de cereja","lightning":"raio",
+  "snow":"de neve","hummingbird":"beija-flor","hawk":"falcão","roly":"tatu","poly":"bola","luna":"lua",
+  "monarch":"monarca","tiger":"tigre","swallowtail":"rabo-de-andorinha","walking":"que anda","brightbulb":"lâmpada-brilhante",
+  "frost":"gelado","flutter":"esvoaçante","stick":"graveto","winterpillar":"lagarta-de-inverno","flower":"flor",
+  "fur":"pele","moonlight":"luar","sweet":"doce","queen":"rainha","biggest":"maior","birdwing":"asa-de-pássaro",
+  "saint":"santo","sunset":"pôr-do-sol","jewel":"joia","magma":"magma","orchid":"orquídea","fairy":"fada",
+  "snowball":"bola-de-neve","speedy":"veloz","strobe":"estroboscópico","nugget":"pepita","mine":"da mina",
+  "tunnel":"do túnel","millipede":"piolho-de-cobra","puddle":"poça","scarab":"escaravelho","waterfly":"mosca-d'água",
+  "wing":"asa","earthworm":"minhoca-de-terra","shard":"caco","roach":"barata","wasp":"vespa","cooktop":"fogão",
+  "smoke":"fumaça","hidden":"escondido","parchment":"pergaminho","void":"vazio","grasshopper":"gafanhoto",
+  "icehopper":"pulador-de-gelo","leafhopper":"pulador-de-folha","petalhopper":"pulador-de-pétala","strawhopper":"pulador-de-palha",
+  "hermit":"eremita","relic":"relíquia","surf":"onda","waterbug":"barata-d'água","windleaf":"folha-do-vento","mote":"partícula",
+  "clay":"argila","peat":"turfa","shard":"caco","mass":"massa","sod":"torrão","glass":"vidro","porcelain":"porcelana",
+  "figure":"figura","worn":"desgastado","toadstool":"cogumelo","shadow":"sombra","sweetroot":"raiz-doce","jade":"jade",
+  "dulse":"alga-dulse","mussels":"mexilhões","grapes":"uvas","lettuce":"alface","underseaweed":"alga-submarina",
+  "berries":"frutinhas","earthshroom":"cogumelo-da-terra","rockroot":"raiz-de-pedra","shale":"xisto","ash":"cinza",
+  "breath":"sopro","pepper":"pimenta","hot":"quente","chestnuts":"castanhas","written":"escrita","spell":"feitiço",
+  "fruit":"fruta","ethereal":"etérea","blossom":"flor","pearl":"pérola","herb":"erva","powder":"pó","voidite":"voidita",
+  "horn":"chifre","loam":"barro","katydid":"esperança","singing":"cantora","dragon-horn":"chifre-de-dragão",
+  "chirping":"cricrilante","fern":"samambaia",
+};
+function autoTranslateName(name){
+  const key = name.toLowerCase();
+  if (NAME_OVERRIDES_PT[key]) return NAME_OVERRIDES_PT[key];
+  const words = name.split(/([ -])/);
+  const translated = words.map(w=>{
+    if (w===' '||w==='-') return w;
+    const lw = w.toLowerCase().replace(/[^a-zà-ú']/gi,'');
+    if (WORD_MAP_PT[lw]){
+      const tr = WORD_MAP_PT[lw];
+      return tr.charAt(0).toUpperCase() + tr.slice(1);
+    }
+    return w;
+  });
+  return translated.join('');
+}
+function trItemName(item){
+  if (lang === 'pt'){
+    if (item.pt) return item.pt;
+    return autoTranslateName(item.n);
+  }
+  return item.n;
+}
+
+const DATA = {
+  arqueologia: { label: "🏺 Arqueologia", sets: [
+    {name:"Aldarian Artifact Set", season:['all'], items:[
+      {n:"Aldarian Gauntlet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Aldarian_gauntlet.png/40px-Aldarian_gauntlet.png?8a771d", loc:"The Narrows (escavação)", r:"rare"},
+      {n:"Aldarian Sword", img:"https://fieldsofmistria.wiki.gg/images/thumb/Aldarian_sword.png/40px-Aldarian_sword.png?3cee2a", loc:"The Narrows (escavação)", r:"uncommon"},
+      {n:"Aldarian War Banner", img:"https://fieldsofmistria.wiki.gg/images/thumb/Aldarian_war_banner.png/40px-Aldarian_war_banner.png?d1fe55", loc:"The Narrows (escavação)", r:"rare"},
+      {n:"Family Crest Pendant", img:"https://fieldsofmistria.wiki.gg/images/thumb/Family_crest_pendant.png/40px-Family_crest_pendant.png?bddca5", loc:"The Narrows (escavação)", r:"uncommon"},
+      {n:"Lost Crown of Aldaria", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lost_crown_of_aldaria.png/40px-Lost_crown_of_aldaria.png?54d972", loc:"The Narrows (escavação)", r:"legendary"},
+    ]},
+    {name:"Caldosian Artifact Set", season:['all'], items:[
+      {n:"Caldosian Breastplate", img:"https://fieldsofmistria.wiki.gg/images/thumb/Caldosian_breastplate.png/40px-Caldosian_breastplate.png?b44ce6", loc:"The Eastern Road (escavação)", r:"rare"},
+      {n:"Caldosian Drinking Horn", img:"https://fieldsofmistria.wiki.gg/images/thumb/Caldosian_drinking_horn.png/40px-Caldosian_drinking_horn.png?b8a4b8", loc:"The Eastern Road (escavação)", r:"rare"},
+      {n:"Caldosian Emperor Bust", img:"https://fieldsofmistria.wiki.gg/images/thumb/Caldosian_emperor_bust.png/40px-Caldosian_emperor_bust.png?6b467c", loc:"The Eastern Road (escavação)", r:"uncommon"},
+      {n:"Caldosian Sword", img:"https://fieldsofmistria.wiki.gg/images/thumb/Caldosian_sword.png/40px-Caldosian_sword.png?a2fed5", loc:"The Eastern Road (escavação)", r:"uncommon"},
+      {n:"Statuette of Caldarus", img:"https://fieldsofmistria.wiki.gg/images/thumb/Statuette_of_caldarus.png/40px-Statuette_of_caldarus.png?e94015", loc:"The Eastern Road (escavação)", r:"legendary"},
+    ]},
+    {name:"Alda Artifact Set", season:['all'], items:[
+      {n:"Alda Bronze Sword", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alda_bronze_sword.png/40px-Alda_bronze_sword.png?5bd40d", loc:"Sweetwater Farm (escavação)", r:"rare"},
+      {n:"Alda Clay Pot", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alda_clay_pot.png/40px-Alda_clay_pot.png?f31937", loc:"Sweetwater Farm (escavação)", r:"uncommon"},
+      {n:"Alda Feather Pendant", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alda_feather_pendant.png/40px-Alda_feather_pendant.png?430950", loc:"Sweetwater Farm (escavação)", r:"uncommon"},
+      {n:"Alda Gem Bracelet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alda_gem_bracelet.png/40px-Alda_gem_bracelet.png?347810", loc:"Sweetwater Farm (escavação)", r:"legendary"},
+      {n:"Alda Mural Tablet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alda_mural_tablet.png/40px-Alda_mural_tablet.png?c9e735", loc:"Sweetwater Farm (escavação)", r:"rare"},
+    ]},
+    {name:"Ancient Artifact Set", season:['all'], items:[
+      {n:"Ancient Crystal Goblet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_crystal_goblet.png/40px-Ancient_crystal_goblet.png?fe9d66", loc:"The Western Ruins (escavação)", r:"rare"},
+      {n:"Ancient Gold Coin", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_gold_coin.png/40px-Ancient_gold_coin.png?2a288d", loc:"The Western Ruins (escavação)", r:"uncommon"},
+      {n:"Ancient Horn Circlet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_horn_circlet.png/40px-Ancient_horn_circlet.png?1a5f50", loc:"The Western Ruins (escavação)", r:"rare"},
+      {n:"Ancient Royal Scepter", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_royal_scepter.png/40px-Ancient_royal_scepter.png?d40633", loc:"The Western Ruins (escavação)", r:"legendary"},
+      {n:"Ancient Stone Lantern", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_stone_lantern.png/40px-Ancient_stone_lantern.png?df1705", loc:"The Western Ruins (escavação)", r:"uncommon"},
+    ]},
+    {name:"Prehistoric Artifact Set", season:['all'], items:[
+      {n:"Amber Trapped Insect", img:"https://fieldsofmistria.wiki.gg/images/thumb/Amber_trapped_insect.png/40px-Amber_trapped_insect.png?b7950c", loc:"The Beach (escavação)", r:"uncommon"},
+      {n:"Fossilized Egg", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fossilized_egg.png/40px-Fossilized_egg.png?339dce", loc:"The Beach (escavação)", r:"rare"},
+      {n:"Meteorite", img:"https://fieldsofmistria.wiki.gg/images/thumb/Meteorite.png/40px-Meteorite.png?b07875", loc:"The Beach (escavação)", r:"legendary"},
+      {n:"Tiny Dinosaur Skeleton", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tiny_dinosaur_skeleton.png/40px-Tiny_dinosaur_skeleton.png?3aaba1", loc:"The Beach (escavação)", r:"rare"},
+      {n:"Trilobite Fossil", img:"https://fieldsofmistria.wiki.gg/images/thumb/Trilobite_fossil.png/40px-Trilobite_fossil.png?9d4562", loc:"The Beach (escavação)", r:"uncommon"},
+    ]},
+    {name:"Oopart Artifact Set", season:['all'], items:[
+      {n:"Black Tablet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Black_tablet.png/40px-Black_tablet.png?832df5", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Completely Wrong Map", img:"https://fieldsofmistria.wiki.gg/images/thumb/Completely_wrong_map.png/40px-Completely_wrong_map.png?a6fd45", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Muttering Cube", img:"https://fieldsofmistria.wiki.gg/images/thumb/Muttering_cube.png/40px-Muttering_cube.png?b28764", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Unknown Dragon Statuette", img:"https://fieldsofmistria.wiki.gg/images/thumb/Unknown_dragon_statuette.png/40px-Unknown_dragon_statuette.png?35ff5c", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+      {n:"Weightless Stone", img:"https://fieldsofmistria.wiki.gg/images/thumb/Weightless_stone.png/40px-Weightless_stone.png?93dc95", loc:"Locais de escavação (skill Well Placed)", r:"uncommon"},
+    ]},
+    {name:"Aquatic Artifact Set", season:['all'], items:[
+      {n:"Coin Lump", img:"https://fieldsofmistria.wiki.gg/images/thumb/Coin_lump.png/40px-Coin_lump.png?6d73f7", loc:"Pescando (skill Aquatic Antiquities)", r:"rare"},
+      {n:"Giant Fish Scale", img:"https://fieldsofmistria.wiki.gg/images/thumb/Giant_fish_scale.png/40px-Giant_fish_scale.png?dbfae2", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Rubber Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rubber_fish.png/40px-Rubber_fish.png?9e0977", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Rusted Treasure Chest", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rusted_treasure_chest.png/40px-Rusted_treasure_chest.png?9b9f17", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+      {n:"Water Sphere", img:"https://fieldsofmistria.wiki.gg/images/thumb/Water_sphere.png/40px-Water_sphere.png?f84df6", loc:"Pescando (skill Aquatic Antiquities)", r:"uncommon"},
+    ]},
+    {name:"Sunken Artifact Set", season:['all'], items:[
+      {n:"Criminal Confession", img:"https://fieldsofmistria.wiki.gg/images/thumb/Criminal_confession.png/40px-Criminal_confession.png?7454d3", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Mermaid's Comb", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mermaid%27s_comb.png/40px-Mermaid%27s_comb.png?d7aea9", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rainbow Seaweed", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rainbow_seaweed.png/40px-Rainbow_seaweed.png?52af58", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rock with a Hole", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rock_with_a_hole.png/40px-Rock_with_a_hole.png?44f55a", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+      {n:"Rusted Shield", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rusted_shield.png/40px-Rusted_shield.png?211914", loc:"Mergulhando (skill Sunken Secrets)", r:"uncommon"},
+    ]},
+    {name:"Buried Artifact Set", season:['all'], items:[
+      {n:"Diamond-backed Mirror", img:"https://fieldsofmistria.wiki.gg/images/thumb/Diamond_backed_mirror.png/40px-Diamond_backed_mirror.png?e47120", loc:"The Mines (escavação geral)", r:"rare"},
+      {n:"Flint Arrowhead", img:"https://fieldsofmistria.wiki.gg/images/thumb/Flint_arrowhead.png/40px-Flint_arrowhead.png?a7be01", loc:"The Mines (escavação geral)", r:"uncommon"},
+      {n:"Obsidian Blade", img:"https://fieldsofmistria.wiki.gg/images/thumb/Obsidian_blade.png/40px-Obsidian_blade.png?a04eca", loc:"The Mines (escavação geral)", r:"rare"},
+      {n:"Shortcut Scroll", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shortcut_scroll.png/40px-Shortcut_scroll.png?bfeb01", loc:"The Mines (escavação geral)", r:"legendary"},
+      {n:"Stone Horse", img:"https://fieldsofmistria.wiki.gg/images/thumb/Stone_horse.png/40px-Stone_horse.png?8788c3", loc:"The Mines (escavação geral)", r:"uncommon"},
+    ]},
+    {name:"Upper Mines Artifact Set", season:['all'], items:[
+      {n:"Miner's Helmet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Miner%27s_helmet.png/40px-Miner%27s_helmet.png?1f0012", loc:"Upper Mines (andares 1–19)", r:"rare"},
+      {n:"Miner's Pickaxe", img:"https://fieldsofmistria.wiki.gg/images/thumb/Miner%27s_pickaxe.png/40px-Miner%27s_pickaxe.png?5d49a5", loc:"Upper Mines (andares 1–19)", r:"common"},
+      {n:"Miner's Rucksack", img:"https://fieldsofmistria.wiki.gg/images/thumb/Miner%27s_rucksack.png/40px-Miner%27s_rucksack.png?b6dd53", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+      {n:"Miner's Slab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Miner%27s_slab.png/40px-Miner%27s_slab.png?5f4649", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+      {n:"Tin Lunchbox", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tin_lunchbox.png/40px-Tin_lunchbox.png?ee19c6", loc:"Upper Mines (andares 1–19)", r:"uncommon"},
+    ]},
+    {name:"Tide Caverns Artifact Set", season:['all'], items:[
+      {n:"Crab Statue", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crab_statue.png/40px-Crab_statue.png?106302", loc:"Tide Caverns (andares 21–39)", r:"rare"},
+      {n:"Dense Water", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dense_water.png/40px-Dense_water.png?47fc44", loc:"Tide Caverns (andares 21–39)", r:"uncommon"},
+      {n:"Starlight Coral", img:"https://fieldsofmistria.wiki.gg/images/thumb/Starlight_coral.png/40px-Starlight_coral.png?2d18eb", loc:"Tide Caverns (andares 21–39)", r:"common"},
+      {n:"Stone Shell", img:"https://fieldsofmistria.wiki.gg/images/thumb/Stone_shell.png/40px-Stone_shell.png?1fb1fa", loc:"Tide Caverns (andares 21–39)", r:"common"},
+      {n:"Tidestone", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tidestone.png/40px-Tidestone.png?cecd2d", loc:"Tide Caverns (andares 21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth Artifact Set", season:['all'], items:[
+      {n:"Earth-infused Stone", img:"https://fieldsofmistria.wiki.gg/images/thumb/Earth-infused_stone.png/40px-Earth-infused_stone.png?49af36", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+      {n:"Faceted Rock Gem", img:"https://fieldsofmistria.wiki.gg/images/thumb/Faceted_rock_gem.png/40px-Faceted_rock_gem.png?81544a", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+      {n:"Really Round Rock", img:"https://fieldsofmistria.wiki.gg/images/thumb/Really_round_rock.png/40px-Really_round_rock.png?6918ab", loc:"Deep Earth (andares 41–59)", r:"common"},
+      {n:"Rock Statue", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rock_statue.png/40px-Rock_statue.png?538c74", loc:"Deep Earth (andares 41–59)", r:"rare"},
+      {n:"Seriously Square Stone", img:"https://fieldsofmistria.wiki.gg/images/thumb/Seriously_square_stone.png/40px-Seriously_square_stone.png?50a3b9", loc:"Deep Earth (andares 41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves Artifact Set", season:['all'], items:[
+      {n:"Fire Crystal", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fire_crystal.png/40px-Fire_crystal.png?b191be", loc:"Lava Caves (andares 61–79)", r:"common"},
+      {n:"Rainbow Geode", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rainbow_geode.png/40px-Rainbow_geode.png?fc4987", loc:"Lava Caves (andares 61–79)", r:"uncommon"},
+      {n:"Red Obsidian", img:"https://fieldsofmistria.wiki.gg/images/thumb/Red_obsidian.png/40px-Red_obsidian.png?5dac82", loc:"Lava Caves (andares 61–79)", r:"uncommon"},
+      {n:"Tiny Volcano", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tiny_volcano.png/40px-Tiny_volcano.png?1394f8", loc:"Lava Caves (andares 61–79)", r:"rare"},
+      {n:"Warm Rock", img:"https://fieldsofmistria.wiki.gg/images/thumb/Warm_rock.png/40px-Warm_rock.png?82641c", loc:"Lava Caves (andares 61–79)", r:"common"},
+    ]},
+    {name:"Dragon Artifact Set", season:['all'], items:[
+      {n:"Dragon Claw", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragon_claw.png/40px-Dragon_claw.png?3181c5", loc:"Ancient Ruins (andares 81–99)", r:"uncommon"},
+      {n:"Dragon-Forged Bracelet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragon_forged_bracelet.png/40px-Dragon_forged_bracelet.png?387305", loc:"Ancient Ruins (andares 81–99)", r:"rare"},
+      {n:"Dragon Pact Tablet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragon_pact_tablet.png/40px-Dragon_pact_tablet.png?9b7505", loc:"Ancient Ruins (andares 81–99)", r:"legendary"},
+      {n:"Dragon Scale", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragon_scale.png/40px-Dragon_scale.png?388209", loc:"Ancient Ruins (andares 81–99)", r:"uncommon"},
+      {n:"Hardened Essence", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hardened_essence.png/40px-Hardened_essence.png?5d3249", loc:"Ancient Ruins (andares 81–99)", r:"rare"},
+    ]},
+    {name:"Ritual Artifact Set", season:['all'], items:[
+      {n:"Ritual Beads", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ritual_beads.png/40px-Ritual_beads.png?5b6559", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Chalice", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ritual_chalice.png/40px-Ritual_chalice.png?557d07", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Incense Burner", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ritual_incense_burner.png/40px-Ritual_incense_burner.png?e8bac3", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"uncommon"},
+      {n:"Ritual Scepter", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ritual_scepter.png/40px-Ritual_scepter.png?adf966", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"rare"},
+      {n:"Ritual Tablet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ritual_tablet.png/40px-Ritual_tablet.png?420c88", loc:"Ritual Chambers, Mines (skill Lost to History)", r:"rare"},
+    ]},
+    {name:"Mist Artifact Set", season:['all'], items:[
+      {n:"Mist Crystal", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mist_crystal.png/40px-Mist_crystal.png?2f1940", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+      {n:"Mist Flute", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mist_flute.png/40px-Mist_flute.png?1a4866", loc:"Mist Spots (skill Mist Sight)", r:"rare"},
+      {n:"Mist Scroll", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mist_scroll.png/40px-Mist_scroll.png?2c84c7", loc:"Mist Spots (skill Mist Sight)", r:"rare"},
+      {n:"Misty Black Mirror", img:"https://fieldsofmistria.wiki.gg/images/thumb/Misty_black_mirror.png/40px-Misty_black_mirror.png?4bf04b", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+      {n:"Misty Feather Quill", img:"https://fieldsofmistria.wiki.gg/images/thumb/Misty_feather_quill.png/40px-Misty_feather_quill.png?96f8e0", loc:"Mist Spots (skill Mist Sight)", r:"uncommon"},
+    ]},
+    {name:"Vintage Farm Tools Set", season:['all'], items:[
+      {n:"Vintage Brush", img:"https://fieldsofmistria.wiki.gg/images/thumb/Vintage_brush.png/40px-Vintage_brush.png?adb3e8", loc:"Sua Fazenda (skill Former Farmers)", r:"rare"},
+      {n:"Vintage Cow Bell", img:"https://fieldsofmistria.wiki.gg/images/thumb/Vintage_cow_bell.png/40px-Vintage_cow_bell.png?c50c40", loc:"Sua Fazenda (skill Former Farmers)", r:"legendary"},
+      {n:"Vintage Hammer", img:"https://fieldsofmistria.wiki.gg/images/thumb/Vintage_hammer.png/40px-Vintage_hammer.png?7c37f7", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+      {n:"Vintage Sickle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Vintage_sickle.png/40px-Vintage_sickle.png?f667ff", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+      {n:"Vintage Watering Can", img:"https://fieldsofmistria.wiki.gg/images/thumb/Vintage_watering_can.png/40px-Vintage_watering_can.png?4122f6", loc:"Sua Fazenda (skill Former Farmers)", r:"uncommon"},
+    ]},
+    {name:"Metals of Mistria Set", season:['all'], items:[
+      {n:"Perfect Copper Ore", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_copper_ore.png/40px-Perfect_copper_ore.png?f66252", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Perfect Iron Ore", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_iron_ore.png/40px-Perfect_iron_ore.png?c45762", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Perfect Silver Ore", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_silver_ore.png/40px-Perfect_silver_ore.png?3e274e", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Perfect Gold Ore", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_gold_ore.png/40px-Perfect_gold_ore.png?f40629", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Perfect Mistril Ore", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_mistril_ore.png/40px-Perfect_mistril_ore.png?fdb69b", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Gems of Mistria Set", season:['all'], items:[
+      {n:"Perfect Ruby", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_ruby.png/40px-Perfect_ruby.png?8b714c", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Perfect Sapphire", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_sapphire.png/40px-Perfect_sapphire.png?e3aca7", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Perfect Emerald", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_emerald.png/40px-Perfect_emerald.png?80882c", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Perfect Diamond", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_diamond.png/40px-Perfect_diamond.png?ac54e3", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Perfect Pink Diamond", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perfect_pink_diamond.png/40px-Perfect_pink_diamond.png?80aa1d", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Deep Woods Artifact Set", season:['all'], items:[
+      {n:"Crystal Apple", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystal_apple.png/40px-Crystal_apple.png?6a4aca", loc:"The Deep Woods", r:"rare"},
+      {n:"Fossilized Mandrake Root", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fossilized_mandrake_root.png/40px-Fossilized_mandrake_root.png?2db359", loc:"The Deep Woods", r:"legendary"},
+      {n:"Gathering Basket", img:"https://fieldsofmistria.wiki.gg/images/thumb/Gathering_basket.png/40px-Gathering_basket.png?9d7dee", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Metal Leaf", img:"https://fieldsofmistria.wiki.gg/images/thumb/Metal_leaf.png/40px-Metal_leaf.png?913ba3", loc:"The Deep Woods", r:"rare"},
+      {n:"Petrified Wood", img:"https://fieldsofmistria.wiki.gg/images/thumb/Petrified_wood.png/40px-Petrified_wood.png?52c376", loc:"The Deep Woods", r:"uncommon"},
+    ]},
+    {name:"Fish Trap Artifact Set", season:['all'], items:[
+      {n:"Clay Amphora", img:"https://fieldsofmistria.wiki.gg/images/thumb/Clay_amphora.png/40px-Clay_amphora.png?d2d67e", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Sea Glass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sea_glass.png/40px-Sea_glass.png?7a76f0", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Porcelain Figure", img:"https://fieldsofmistria.wiki.gg/images/thumb/Porcelain_figure.png/40px-Porcelain_figure.png?54a03a", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Worn Pendant", img:"https://fieldsofmistria.wiki.gg/images/thumb/Worn_pendant.png/40px-Worn_pendant.png?cee1a7", loc:"Fish Trap, The Beach", r:"rare"},
+      {n:"Message in a Bottle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Message_in_a_bottle.png/40px-Message_in_a_bottle.png?ffed3f", loc:"Fish Trap, The Beach", r:"legendary"},
+    ]},
+    {name:"Dig Site Material Set", season:['all'], items:[
+      {n:"Clay", img:"https://fieldsofmistria.wiki.gg/images/thumb/Clay.png/40px-Clay.png?a0ee32", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Peat", img:"https://fieldsofmistria.wiki.gg/images/thumb/Peat.png/40px-Peat.png?b94780", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Shard Mass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shard_mass.png/40px-Shard_mass.png?6468d3", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Shards", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shards.png/40px-Shards.png?86122e", loc:"Locais de escavação (qualquer)", r:"common"},
+      {n:"Sod", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sod.png/40px-Sod.png?c4fd2f", loc:"Locais de escavação (qualquer)", r:"common"},
+    ]},
+  ]},
+  peixes: { label: "🐟 Peixes", sets: [
+    {name:"Multi-Season Fish Set", season:['all'], items:[
+      {n:"Koi", img:"https://fieldsofmistria.wiki.gg/images/thumb/Koi.png/40px-Koi.png?307e89", loc:"Lagoa", r:"common"},
+      {n:"Pike", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pike.png/40px-Pike.png?6bec5e", loc:"Rio", r:"common"},
+      {n:"Pollock", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pollock.png/40px-Pollock.png?7fa3e4", loc:"Oceano", r:"common"},
+      {n:"Smallmouth Bass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Smallmouth_bass.png/40px-Smallmouth_bass.png?2535af", loc:"Rio", r:"common"},
+      {n:"Trout", img:"https://fieldsofmistria.wiki.gg/images/thumb/Trout.png/40px-Trout.png?eab1e8", loc:"Qualquer local de pesca", r:"common"},
+    ]},
+    {name:"Spring River Fish Set", season:['sp'], items:[
+      {n:"Bluegill", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bluegill.png/40px-Bluegill.png?6d9af2", loc:"Rio", r:"common"},
+      {n:"Carp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Carp.png/40px-Carp.png?b92e45", loc:"Rio", r:"common"},
+      {n:"Chub", img:"https://fieldsofmistria.wiki.gg/images/thumb/Chub.png/40px-Chub.png?4e3655", loc:"Rio", r:"common"},
+      {n:"Paddlefish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Paddlefish.png/40px-Paddlefish.png?c9a465", loc:"Rio", r:"rare", weather:['🌊 Giant']},
+      {n:"Walleye", img:"https://fieldsofmistria.wiki.gg/images/thumb/Walleye.png/40px-Walleye.png?69f1ab", loc:"Rio", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+    ]},
+    {name:"Spring Pond Fish Set", season:['sp'], items:[
+      {n:"Angel Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Angel_fish.png/40px-Angel_fish.png?886558", loc:"Lagoa", r:"common"},
+      {n:"Barb", img:"https://fieldsofmistria.wiki.gg/images/thumb/Barb.png/40px-Barb.png?ffb943", loc:"Lagoa", r:"common"},
+      {n:"Brown Trout", img:"https://fieldsofmistria.wiki.gg/images/thumb/Brown_trout.png/40px-Brown_trout.png?5f10ef", loc:"Lagoa", r:"common"},
+      {n:"Crucian Carp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crucian_carp.png/40px-Crucian_carp.png?17a1b3", loc:"Lagoa", r:"common"},
+      {n:"Goldfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Goldfish.png/40px-Goldfish.png?b8d069", loc:"Lagoa", r:"rare"},
+    ]},
+    {name:"Spring Ocean Fish Set", season:['sp'], items:[
+      {n:"Anchovy", img:"https://fieldsofmistria.wiki.gg/images/thumb/Anchovy.png/40px-Anchovy.png?e85bbe", loc:"Oceano", r:"common"},
+      {n:"Lobster", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lobster.png/40px-Lobster.png?10760c", loc:"Oceano", r:"common"},
+      {n:"Mackerel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mackerel.png/40px-Mackerel.png?545d28", loc:"Oceano", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Ocean Sunfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ocean_sunfish.png/40px-Ocean_sunfish.png?dffd55", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Shrimp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shrimp.png/40px-Shrimp.png?7c398b", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Summer River Fish Set", season:['su'], items:[
+      {n:"Bream", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bream.png/40px-Bream.png?c86586", loc:"Rio", r:"common"},
+      {n:"Loach", img:"https://fieldsofmistria.wiki.gg/images/thumb/Loach.png/40px-Loach.png?a220bc", loc:"Rio", r:"common"},
+      {n:"Minnow", img:"https://fieldsofmistria.wiki.gg/images/thumb/Minnow.png/40px-Minnow.png?d0bc7d", loc:"Rio", r:"common"},
+      {n:"Sweetfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sweetfish.png/40px-Sweetfish.png?8e1d2b", loc:"Rio", r:"common"},
+      {n:"Tarpon", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tarpon.png/40px-Tarpon.png?beb0cb", loc:"Rio", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Summer Pond Fish Set", season:['su'], items:[
+      {n:"Brown Bullhead", img:"https://fieldsofmistria.wiki.gg/images/thumb/Brown_bullhead.png/40px-Brown_bullhead.png?4d49a6", loc:"Lagoa", r:"common"},
+      {n:"Giant Koi", img:"https://fieldsofmistria.wiki.gg/images/thumb/Giant_koi.png/40px-Giant_koi.png?9998df", loc:"Lagoa", r:"rare", weather:['🌊 Giant']},
+      {n:"Golden Shiner", img:"https://fieldsofmistria.wiki.gg/images/thumb/Golden_shiner.png/40px-Golden_shiner.png?44a060", loc:"Lagoa", r:"common"},
+      {n:"Lake Chub", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lake_chub.png/40px-Lake_chub.png?b716ae", loc:"Lagoa", r:"common"},
+      {n:"Sauger", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sauger.png/40px-Sauger.png?7e15ed", loc:"Lagoa", r:"common"},
+    ]},
+    {name:"Summer Ocean Fish Set", season:['su'], items:[
+      {n:"Char", img:"https://fieldsofmistria.wiki.gg/images/thumb/Char.png/40px-Char.png?bbb00e", loc:"Oceano", r:"common"},
+      {n:"Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crab.png/40px-Crab.png?41626c", loc:"Oceano", r:"common"},
+      {n:"Dart", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dart.png/40px-Dart.png?85ff96", loc:"Oceano", r:"common"},
+      {n:"Grouper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Grouper.png/40px-Grouper.png?6f7ec3", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Stingray", img:"https://fieldsofmistria.wiki.gg/images/thumb/Stingray.png/40px-Stingray.png?c8c162", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Fall River Fish Set", season:['fa'], items:[
+      {n:"Grayling", img:"https://fieldsofmistria.wiki.gg/images/thumb/Grayling.png/40px-Grayling.png?1aea51", loc:"Rio", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Lamprey", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lamprey.png/40px-Lamprey.png?669f01", loc:"Rio", r:"common"},
+      {n:"Perch", img:"https://fieldsofmistria.wiki.gg/images/thumb/Perch.png/40px-Perch.png?5c3d64", loc:"Rio", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Razorback", img:"https://fieldsofmistria.wiki.gg/images/thumb/Razorback.png/40px-Razorback.png?5bf178", loc:"Rio", r:"rare", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Shad", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shad.png/40px-Shad.png?6b6bec", loc:"Rio", r:"common"},
+    ]},
+    {name:"Fall Pond Fish Set", season:['fa'], items:[
+      {n:"Bluefish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bluefish.png/40px-Bluefish.png?afe965", loc:"Lagoa", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Killifish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Killifish.png/40px-Killifish.png?5bba81", loc:"Lagoa", r:"common"},
+      {n:"Rainbow Trout", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rainbow_trout.png/40px-Rainbow_trout.png?40cdc7", loc:"Lagoa", r:"common"},
+      {n:"Striped Bass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Striped_bass.png/40px-Striped_bass.png?5b9414", loc:"Lagoa", r:"common"},
+      {n:"White Perch", img:"https://fieldsofmistria.wiki.gg/images/thumb/White_perch.png/40px-White_perch.png?ebbaea", loc:"Lagoa", r:"rare"},
+    ]},
+    {name:"Fall Ocean Fish Set", season:['fa'], items:[
+      {n:"Butterfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Butterfish.png/40px-Butterfish.png?9fa23c", loc:"Oceano", r:"common"},
+      {n:"Halibut", img:"https://fieldsofmistria.wiki.gg/images/thumb/Halibut.png/40px-Halibut.png?dc05e0", loc:"Oceano", r:"common", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Mullet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mullet.png/40px-Mullet.png?e8c2ef", loc:"Oceano", r:"common"},
+      {n:"Saury", img:"https://fieldsofmistria.wiki.gg/images/thumb/Saury.png/40px-Saury.png?31b0af", loc:"Oceano", r:"common"},
+      {n:"Shark", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shark.png/40px-Shark.png?ab33e3", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Winter River Fish Set", season:['wi'], items:[
+      {n:"Bowfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bowfish.png/40px-Bowfish.png?84632c", loc:"Rio", r:"common"},
+      {n:"Dace", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dace.png/40px-Dace.png?f79178", loc:"Rio", r:"common", weather:['❄️ Neve'], wtags:['snow']},
+      {n:"Freshwater Eel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Freshwater_eel.png/40px-Freshwater_eel.png?f95ede", loc:"Rio", r:"common"},
+      {n:"Herring", img:"https://fieldsofmistria.wiki.gg/images/thumb/Herring.png/40px-Herring.png?b6912c", loc:"Rio", r:"common"},
+      {n:"Shadow Bass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shadow_bass.png/40px-Shadow_bass.png?a3e96c", loc:"Rio", r:"rare"},
+    ]},
+    {name:"Winter Pond Fish Set", season:['wi'], items:[
+      {n:"Alligator Gar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Alligator_gar.png/40px-Alligator_gar.png?a242f3", loc:"Lagoa", r:"rare", weather:['🌊 Giant']},
+      {n:"Burbot", img:"https://fieldsofmistria.wiki.gg/images/thumb/Burbot.png/40px-Burbot.png?705113", loc:"Lagoa", r:"common", weather:['❄️ Neve'], wtags:['snow']},
+      {n:"Flathead Catfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Flathead_catfish.png/40px-Flathead_catfish.png?584edd", loc:"Lagoa", r:"common"},
+      {n:"Giant Tilapia", img:"https://fieldsofmistria.wiki.gg/images/thumb/Giant_tilapia.png/40px-Giant_tilapia.png?763e81", loc:"Lagoa", r:"uncommon", weather:['🌊 Giant']},
+      {n:"Tilapia", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tilapia.png/40px-Tilapia.png?ce3a62", loc:"Lagoa", r:"common"},
+    ]},
+    {name:"Winter Ocean Fish Set", season:['wi'], items:[
+      {n:"Horse Mackerel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Horse_mackerel.png/40px-Horse_mackerel.png?8a02e1", loc:"Oceano", r:"common"},
+      {n:"King Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/King_crab.png/40px-King_crab.png?9f77db", loc:"Oceano", r:"common", weather:['❄️ Neve'], wtags:['snow']},
+      {n:"Oarfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Oarfish.png/40px-Oarfish.png?a04b9d", loc:"Oceano", r:"rare", weather:['🌊 Giant']},
+      {n:"Sand Lance", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sand_lance.png/40px-Sand_lance.png?1ad58d", loc:"Oceano", r:"common"},
+      {n:"Sea Bass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sea_bass.png/40px-Sea_bass.png?105de5", loc:"Oceano", r:"common"},
+    ]},
+    {name:"Fish Bait Set", season:['all'], items:[
+      {n:"Massive Minnow", img:"https://fieldsofmistria.wiki.gg/images/thumb/Massive_minnow.png/40px-Massive_minnow.png?3234c3", loc:"Qualquer local (requer Fish Bait)", r:"common"},
+      {n:"Copper Rockfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Copper_rockfish.png/40px-Copper_rockfish.png?92a58c", loc:"Qualquer local (requer Fish Bait)", r:"common"},
+      {n:"Iron Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Iron_fish.png/40px-Iron_fish.png?af436a", loc:"Qualquer local (requer Fish Bait)", r:"uncommon"},
+      {n:"Silver Squid", img:"https://fieldsofmistria.wiki.gg/images/thumb/Silver_squid.png/40px-Silver_squid.png?ad84c6", loc:"Qualquer local (requer Fish Bait)", r:"uncommon"},
+      {n:"Golden Eel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Golden_eel.png/40px-Golden_eel.png?18867c", loc:"Qualquer local (requer Fish Bait)", r:"rare", weather:['🌊 Giant']},
+    ]},
+    {name:"Fish Trap Set", season:['all'], items:[
+      {n:"Blue Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Blue_crab.png/40px-Blue_crab.png?64eca2", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Sea Urchin", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sea_urchin.png/40px-Sea_urchin.png?42a886", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Bait Thief", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bait_thief.png/40px-Bait_thief.png?e37725", loc:"Fish Trap, The Beach", r:"common"},
+      {n:"Hake", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hake.png/40px-Hake.png?5a6967", loc:"Fish Trap, The Beach", r:"uncommon"},
+      {n:"Amberjack", img:"https://fieldsofmistria.wiki.gg/images/thumb/Amberjack.png/40px-Amberjack.png?37571e", loc:"Fish Trap, The Beach", r:"rare"},
+    ]},
+    {name:"Deep Woods Fish Set", season:['all'], items:[
+      {n:"Sunny", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sunny.png/40px-Sunny.png?7487f8", loc:"The Deep Woods", r:"common", weather:['🌧 Chuva/❄️ Neve'], wtags:['rain','snow']},
+      {n:"Forest Perch", img:"https://fieldsofmistria.wiki.gg/images/thumb/Forest_perch.png/40px-Forest_perch.png?33565a", loc:"The Deep Woods", r:"common"},
+      {n:"Silver Redhorse", img:"https://fieldsofmistria.wiki.gg/images/thumb/Silver_redhorse.png/40px-Silver_redhorse.png?1e972b", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Lake Trout", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lake_trout.png/40px-Lake_trout.png?e7547a", loc:"The Deep Woods", r:"common"},
+      {n:"Muskie", img:"https://fieldsofmistria.wiki.gg/images/thumb/Muskie.png/40px-Muskie.png?feb8c0", loc:"The Deep Woods", r:"uncommon"},
+    ]},
+    {name:"Upper Mines Fish Set", season:['all'], items:[
+      {n:"Cave Eel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cave_eel.png/40px-Cave_eel.png?1e1f2e", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Cave Shark", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cave_shark.png/40px-Cave_shark.png?675b8b", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Cave Shrimp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cave_shrimp.png/40px-Cave_shrimp.png?6bec9b", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Rock Guppy", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rock_guppy.png/40px-Rock_guppy.png?9bf633", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Stone Loach", img:"https://fieldsofmistria.wiki.gg/images/thumb/Stone_loach.png/40px-Stone_loach.png?ae7ef9", loc:"Upper Mines (1–19)", r:"common"},
+    ]},
+    {name:"Tide Caverns Fish Set", season:['all'], items:[
+      {n:"Archerfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Archerfish.png/40px-Archerfish.png?fb93c8", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Mini-Whale Shark", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mini_whale_shark.png/40px-Mini_whale_shark.png?ab9822", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Sapphire Betta", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sapphire_betta.png/40px-Sapphire_betta.png?e19b66", loc:"Tide Caverns (21–39)", r:"common"},
+      {n:"Transparent Jellyfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Transparent_jellyfish.png/40px-Transparent_jellyfish.png?38e216", loc:"Tide Caverns (21–39)", r:"common"},
+      {n:"Water Balloon Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Water_balloon_fish.png/40px-Water_balloon_fish.png?a848e7", loc:"Tide Caverns (21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth Fish Set", season:['all'], items:[
+      {n:"Earth Eel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Earth_eel.png/40px-Earth_eel.png?f5214e", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Emerald Horned Charger", img:"https://fieldsofmistria.wiki.gg/images/thumb/Emerald_horned_charger.png/40px-Emerald_horned_charger.png?9a2e5a", loc:"Deep Earth (41–59)", r:"rare"},
+      {n:"Pebble Minnow", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pebble_minnow.png/40px-Pebble_minnow.png?9be875", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Rockbiter", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rockbiter.png/40px-Rockbiter.png?3034db", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Shardfin", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shardfin.png/40px-Shardfin.png?730c00", loc:"Deep Earth (41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves Fish Set", season:['all'], items:[
+      {n:"Armored Bass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Armored_bass.png/40px-Armored_bass.png?9bf00a", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Candelabra Seadragon", img:"https://fieldsofmistria.wiki.gg/images/thumb/Candelabra_seadragon.png/40px-Candelabra_seadragon.png?e0aba6", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Firesail Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Firesail_fish.png/40px-Firesail_fish.png?e7e4d7", loc:"Lava Caves (61–79)", r:"rare"},
+      {n:"Lava Piranha", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lava_piranha.png/40px-Lava_piranha.png?e6cf9d", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Sulfur Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sulfur_crab.png/40px-Sulfur_crab.png?346f01", loc:"Lava Caves (61–79)", r:"uncommon"},
+    ]},
+    {name:"Ruins Fish Set", season:['all'], items:[
+      {n:"Winged Shrimp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Winged_shrimp.png/40px-Winged_shrimp.png?c0f43e", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Gazer", img:"https://fieldsofmistria.wiki.gg/images/thumb/Gazer.png/40px-Gazer.png?89156e", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Luminescent Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Luminescent_crab.png/40px-Luminescent_crab.png?56aa78", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Giant Jellyfish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Giant_jellyfish.png/40px-Giant_jellyfish.png?7a27ca", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Coelacanth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Coelacanth.png/40px-Coelacanth.png?c9712e", loc:"Ancient Ruins (81–99)", r:"rare"},
+    ]},
+    {name:"Legendary Fish Set", season:['all'], note:"Conjunto com 4 itens (exceção às regras de 5).", items:[
+      {n:"Cherry Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cherry_fish.png/40px-Cherry_fish.png?9d7f67", loc:"Lagoa", r:"legendary", season:['sp'], weather:['🍃 Vento (pétalas)'], wtags:['wind']},
+      {n:"Leaf Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Leaf_fish.png/40px-Leaf_fish.png?eec7e4", loc:"Rio", r:"legendary", season:['fa'], weather:['🍃 Vento (folhas)'], wtags:['wind']},
+      {n:"Lightning Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lightning_fish.png/40px-Lightning_fish.png?cc0b25", loc:"Qualquer local", r:"legendary", season:['su'], weather:['⛈ Tempestade'], wtags:['storm']},
+      {n:"Snow Fish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Snow_fish.png/40px-Snow_fish.png?7ca2e8", loc:"Oceano", r:"legendary", season:['wi'], weather:['❄️ Nevasca'], wtags:['snow']},
+    ]},
+  ]},
+  flora: { label: "🌸 Flora", sets: [
+    {name:"Spring Crop Set", season:['sp'], items:[
+      {n:"Cabbage", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cabbage.png/40px-Cabbage.png?e2dbdf", pt:"Repolho", loc:"Plantio", r:""},
+      {n:"Cherry", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cherry.png/40px-Cherry.png?e2dbdf", pt:"Cereja", loc:"Plantio ou árvore em The Eastern Road", r:""},
+      {n:"Potato", img:"https://fieldsofmistria.wiki.gg/images/thumb/Potato.png/40px-Potato.png?e58bd2", pt:"Batata", loc:"Plantio", r:""},
+      {n:"Strawberry", img:"https://fieldsofmistria.wiki.gg/images/thumb/Strawberry.png/40px-Strawberry.png?936558", pt:"Morango", loc:"Plantio", r:""},
+      {n:"Turnip", img:"https://fieldsofmistria.wiki.gg/images/thumb/Turnip.png/40px-Turnip.png?e82d93", pt:"Nabo", loc:"Plantio", r:""},
+    ]},
+    {name:"Spring Flower Set", season:['sp'], items:[
+      {n:"Daffodil", img:"https://fieldsofmistria.wiki.gg/images/thumb/Daffodil.png/40px-Daffodil.png?b4d6bb", pt:"Narciso", loc:"Sweetwater Farm / The Narrows", r:""},
+      {n:"Dandelion", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dandelion.png/40px-Dandelion.png?3ae3df", pt:"Dente-de-leão", loc:"Mistria / The Narrows / Sweetwater Farm", r:""},
+      {n:"Lilac", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lilac.png/40px-Lilac.png?ec8693", pt:"Lilás", loc:"The Eastern Road / Sweetwater Farm", r:""},
+      {n:"Snowdrop Anemone", img:"https://fieldsofmistria.wiki.gg/images/thumb/Snowdrop_anemone.png/40px-Snowdrop_anemone.png?59b990", loc:"The Western Ruins / The Beach", r:""},
+      {n:"Tulip", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tulip.png/40px-Tulip.png?134974", pt:"Tulipa", loc:"The Eastern Road / The Narrows / Sweetwater Farm", r:""},
+    ]},
+    {name:"Spring Forage Set", season:['sp'], items:[
+      {n:"Fennel", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fennel.png/40px-Fennel.png?15d44c", pt:"Erva-doce", loc:"The Narrows / The Eastern Road", r:""},
+      {n:"Fiddlehead", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fiddlehead.png/40px-Fiddlehead.png?593e0f", loc:"The Narrows / Sweetwater Farm", r:""},
+      {n:"Morel Mushroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Morel_mushroom.png/40px-Morel_mushroom.png?9b20c9", loc:"Spawn aleatório, sem área fixa", r:""},
+      {n:"Nettle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Nettle.png/40px-Nettle.png?36b1cf", pt:"Urtiga", loc:"Sweetwater Farm", r:""},
+      {n:"Wild Leek", img:"https://fieldsofmistria.wiki.gg/images/thumb/Wild_leek.png/40px-Wild_leek.png?25b8df", loc:"Mistria / The Narrows / The Eastern Road", r:""},
+    ]},
+    {name:"Summer Crop Set", season:['su'], items:[
+      {n:"Chili Pepper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Chili_pepper.png/40px-Chili_pepper.png?ebfc25", pt:"Pimenta", loc:"Plantio", r:""},
+      {n:"Corn", img:"https://fieldsofmistria.wiki.gg/images/thumb/Corn.png/40px-Corn.png?a10db5", pt:"Milho", loc:"Plantio", r:""},
+      {n:"Cucumber", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cucumber.png/40px-Cucumber.png?ac8b1c", pt:"Pepino", loc:"Plantio", r:""},
+      {n:"Tomato", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tomato.png/40px-Tomato.png?a3f9b3", pt:"Tomate", loc:"Plantio", r:""},
+      {n:"Watermelon", img:"https://fieldsofmistria.wiki.gg/images/thumb/Watermelon.png/40px-Watermelon.png?467527", pt:"Melancia", loc:"Plantio", r:""},
+    ]},
+    {name:"Summer Flower Set", season:['su'], items:[
+      {n:"Catmint", img:"https://fieldsofmistria.wiki.gg/images/thumb/Catmint.png/40px-Catmint.png?53d4c7", loc:"The Narrows", r:""},
+      {n:"Cosmos", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cosmos.png/40px-Cosmos.png?7ba0dd", loc:"Sweetwater Farm", r:""},
+      {n:"Daisy", img:"https://fieldsofmistria.wiki.gg/images/thumb/Daisy.png/40px-Daisy.png?d28c8a", pt:"Margarida", loc:"Sweetwater Farm / The Narrows / The Western Ruins / The Eastern Road", r:""},
+      {n:"Iris", img:"https://fieldsofmistria.wiki.gg/images/thumb/Iris.png/40px-Iris.png?561ee9", loc:"The Beach / The Narrows / Sweetwater Farm", r:""},
+      {n:"Marigold", img:"https://fieldsofmistria.wiki.gg/images/thumb/Marigold.png/40px-Marigold.png?f49872", pt:"Cravo-de-defunto", loc:"The Western Ruins / The Deep Woods", r:""},
+    ]},
+    {name:"Summer Forage Set", season:['su'], items:[
+      {n:"Basil", img:"https://fieldsofmistria.wiki.gg/images/thumb/Basil.png/40px-Basil.png?674fff", pt:"Manjericão", loc:"The Eastern Road", r:""},
+      {n:"Dill", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dill.png/40px-Dill.png?e3933e", pt:"Endro", loc:"The Narrows / The Beach / The Western Ruins", r:""},
+      {n:"Oregano", img:"https://fieldsofmistria.wiki.gg/images/thumb/Oregano.png/40px-Oregano.png?d0936d", pt:"Orégano", loc:"Mistria", r:""},
+      {n:"Sage", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sage.png/40px-Sage.png?5ab90b", pt:"Sálvia", loc:"The Narrows / The Beach", r:""},
+      {n:"Thyme", img:"https://fieldsofmistria.wiki.gg/images/thumb/Thyme.png/40px-Thyme.png?72249f", pt:"Tomilho", loc:"Sweetwater Farm", r:""},
+    ]},
+    {name:"Fall Crop Set", season:['fa'], items:[
+      {n:"Apple", img:"https://fieldsofmistria.wiki.gg/images/thumb/Apple.png/40px-Apple.png?e2dbdf", pt:"Maçã", loc:"Plantio ou árvore em The Eastern Road", r:""},
+      {n:"Broccoli", img:"https://fieldsofmistria.wiki.gg/images/thumb/Broccoli.png/40px-Broccoli.png?30b67c", pt:"Brócolis", loc:"Plantio", r:""},
+      {n:"Cranberry", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cranberry.png/40px-Cranberry.png?5b732c", loc:"Plantio", r:""},
+      {n:"Pumpkin", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pumpkin.png/40px-Pumpkin.png?20d1e4", pt:"Abóbora", loc:"Plantio", r:""},
+      {n:"Sweet Potato", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sweet_potato.png/40px-Sweet_potato.png?78b4e5", pt:"Batata-doce", loc:"Plantio", r:""},
+    ]},
+    {name:"Fall Flower Set", season:['fa'], items:[
+      {n:"Celosia", img:"https://fieldsofmistria.wiki.gg/images/thumb/Celosia.png/40px-Celosia.png?5d3ec5", loc:"Plantio", r:""},
+      {n:"Chrysanthemum", img:"https://fieldsofmistria.wiki.gg/images/thumb/Chrysanthemum.png/40px-Chrysanthemum.png?4b937b", pt:"Crisântemo", loc:"Plantio", r:""},
+      {n:"Fog Orchid", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fog_orchid.png/40px-Fog_orchid.png?bf2bd7", loc:"The Eastern Road / The Western Ruins", r:""},
+      {n:"Heather", img:"https://fieldsofmistria.wiki.gg/images/thumb/Heather.png/40px-Heather.png?d6b9bd", loc:"Mistria / The Beach / The Narrows", r:""},
+      {n:"Viola", img:"https://fieldsofmistria.wiki.gg/images/thumb/Viola.png/40px-Viola.png?961d0a", loc:"The Eastern Road", r:""},
+    ]},
+    {name:"Fall Forage Set", season:['fa'], items:[
+      {n:"Chestnut", img:"https://fieldsofmistria.wiki.gg/images/thumb/Chestnut.png/40px-Chestnut.png?33615d", pt:"Castanha", loc:"The Beach / Sweetwater Farm / The Narrows", r:""},
+      {n:"Garlic", img:"https://fieldsofmistria.wiki.gg/images/thumb/Garlic.png/40px-Garlic.png?6941c1", pt:"Alho", loc:"Ruínas em The Eastern Road", r:""},
+      {n:"Horseradish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Horseradish.png/40px-Horseradish.png?72ccb7", pt:"Raiz-forte", loc:"Sweetwater Farm / The Eastern Road / The Beach", r:""},
+      {n:"Moon Fruit", img:"https://fieldsofmistria.wiki.gg/images/thumb/Moon_fruit.png/40px-Moon_fruit.png?9abfb3", loc:"Perto do Wishing Well (Eastern Road) / Sweetwater Farm / The Beach", r:""},
+      {n:"Rosemary", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rosemary.png/40px-Rosemary.png?880ad8", pt:"Alecrim", loc:"Sweetwater Farm", r:""},
+    ]},
+    {name:"Winter Crop Set", season:['wi'], items:[
+      {n:"Beet", img:"https://fieldsofmistria.wiki.gg/images/thumb/Beet.png/40px-Beet.png?906797", pt:"Beterraba", loc:"Plantio", r:""},
+      {n:"Cauliflower", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cauliflower.png/40px-Cauliflower.png?84a1b0", pt:"Couve-flor", loc:"Plantio", r:""},
+      {n:"Daikon Radish", img:"https://fieldsofmistria.wiki.gg/images/thumb/Daikon_radish.png/40px-Daikon_radish.png?8c7a76", loc:"Plantio", r:""},
+      {n:"Pomegranate", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pomegranate.png/40px-Pomegranate.png?e2dbdf", pt:"Romã", loc:"Plantio ou cabana do Errol, The Narrows", r:""},
+      {n:"Snow Peas", img:"https://fieldsofmistria.wiki.gg/images/thumb/Snow_peas.png/40px-Snow_peas.png?19b20f", pt:"Ervilha", loc:"Plantio", r:""},
+    ]},
+    {name:"Winter Flower Set", season:['wi'], items:[
+      {n:"Crocus", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crocus.png/40px-Crocus.png?9fba3c", loc:"The Eastern Road / Sweetwater Farm / The Beach", r:""},
+      {n:"Frost Lily", img:"https://fieldsofmistria.wiki.gg/images/thumb/Frost_lily.png/40px-Frost_lily.png?366ced", loc:"The Eastern Road / The Beach / The Narrows", r:""},
+      {n:"Jasmine", img:"https://fieldsofmistria.wiki.gg/images/thumb/Jasmine.png/40px-Jasmine.png?db70cd", pt:"Jasmim", loc:"Sweetwater Farm / The Eastern Road", r:""},
+      {n:"Poinsettia", img:"https://fieldsofmistria.wiki.gg/images/thumb/Poinsettia.png/40px-Poinsettia.png?b8136d", loc:"The Beach / The Narrows / Sweetwater Farm", r:""},
+      {n:"Snapdragon", img:"https://fieldsofmistria.wiki.gg/images/thumb/Snapdragon.png/40px-Snapdragon.png?38edc9", loc:"The Western Ruins", r:""},
+    ]},
+    {name:"Winter Forage Set", season:['wi'], items:[
+      {n:"Burdock Root", img:"https://fieldsofmistria.wiki.gg/images/thumb/Burdock_root.png/40px-Burdock_root.png?9584e1", loc:"Mistria / The Eastern Road / The Narrows (norte)", r:""},
+      {n:"Holly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Holly.png/40px-Holly.png?3b62e8", pt:"Azevinho", loc:"The Eastern Road / Sweetwater Farm", r:""},
+      {n:"Oyster Mushroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Oyster_mushroom.png/40px-Oyster_mushroom.png?25c214", loc:"The Eastern Road / Mistria / The Beach", r:""},
+      {n:"Pineshroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Pineshroom.png/40px-Pineshroom.png?91d8b6", loc:"Sweetwater Farm", r:""},
+      {n:"Rose Hip", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rose_hip.png/40px-Rose_hip.png?888441", loc:"Arbustos perto do gazebo, Manor House / Mistria", r:""},
+    ]},
+    {name:"Deep Woods Forage Set", season:['all'], items:[
+      {n:"Thorn Vine", img:"https://fieldsofmistria.wiki.gg/images/thumb/Thorn_vine.png/40px-Thorn_vine.png?ae370a", loc:"The Deep Woods", r:""},
+      {n:"Spirit Mushroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Spirit_mushroom.png/40px-Spirit_mushroom.png?d86b94", loc:"The Deep Woods", r:""},
+      {n:"Temple Flower", img:"https://fieldsofmistria.wiki.gg/images/thumb/Temple_flower.png/40px-Temple_flower.png?49b73e", loc:"The Deep Woods", r:""},
+      {n:"Walnut", img:"https://fieldsofmistria.wiki.gg/images/thumb/Walnut.png/40px-Walnut.png?5d08dc", pt:"Noz", loc:"The Deep Woods", r:""},
+      {n:"Bell Berry", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bell_berry.png/40px-Bell_berry.png?2519d6", loc:"The Deep Woods", r:""},
+    ]},
+    {name:"Upper Mines Forage Set", season:['all'], items:[
+      {n:"Narrows Moss", img:"https://fieldsofmistria.wiki.gg/images/thumb/Narrows_moss.png/40px-Narrows_moss.png?cb4540", loc:"Upper Mines (1–19)", r:""},
+      {n:"Red Toadstool", img:"https://fieldsofmistria.wiki.gg/images/thumb/Red_toadstool.png/40px-Red_toadstool.png?38d488", loc:"Upper Mines (1–19), drop ao derrotar Red Mushroom", r:""},
+      {n:"Shadow Flower", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shadow_flower.png/40px-Shadow_flower.png?bc6ead", loc:"Upper Mines (1–19)", r:""},
+      {n:"Sweetroot", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sweetroot.png/40px-Sweetroot.png?612c45", loc:"Upper Mines (1–19)", r:""},
+      {n:"Upper Mines Mushroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Upper_mines_mushroom.png/40px-Upper_mines_mushroom.png?93e6f3", loc:"Upper Mines (1–19)", r:""},
+    ]},
+    {name:"Tide Caverns Forage Set", season:['all'], items:[
+      {n:"Underseaweed", img:"https://fieldsofmistria.wiki.gg/images/thumb/Underseaweed.png/40px-Underseaweed.png?e53352", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Sea Grapes", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sea_grapes.png/40px-Sea_grapes.png?48f5e9", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Jade Dulse", img:"https://fieldsofmistria.wiki.gg/images/thumb/Jade_dulse.png/40px-Jade_dulse.png?3e1efb", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Mines Mussels", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mines_mussels.png/40px-Mines_mussels.png?f330ef", loc:"Tide Caverns (21–39)", r:""},
+      {n:"Tide Lettuce", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tide_lettuce.png/40px-Tide_lettuce.png?b169a9", loc:"Tide Caverns (21–39)", r:"uncommon"},
+    ]},
+    {name:"Deep Earth Forage Set", season:['all'], items:[
+      {n:"Crystal Berries", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystal_berries.png/40px-Crystal_berries.png?3cd5f0", loc:"Deep Earth (41–59)", r:""},
+      {n:"Crystal Rose", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystal_rose.png/40px-Crystal_rose.png?80e28a", loc:"Deep Earth (41–59)", r:""},
+      {n:"Earthshroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Earthshroom.png/40px-Earthshroom.png?6b48ee", loc:"Deep Earth (41–59)", r:""},
+      {n:"Rockroot", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rockroot.png/40px-Rockroot.png?a4f279", loc:"Deep Earth (41–59)", r:""},
+      {n:"Shale Grass", img:"https://fieldsofmistria.wiki.gg/images/thumb/Shale_grass.png/40px-Shale_grass.png?ccb7d1", loc:"Deep Earth (41–59)", r:""},
+    ]},
+    {name:"Lava Caves Forage Set", season:['all'], items:[
+      {n:"Ash Mushroom", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ash_mushroom.png/40px-Ash_mushroom.png?31589f", loc:"Lava Caves (61–79)", r:""},
+      {n:"Breath of Flame", img:"https://fieldsofmistria.wiki.gg/images/thumb/Breath_of_flame.png/40px-Breath_of_flame.png?5c2b18", loc:"Lava Caves (61–79)", r:""},
+      {n:"Flame Pepper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Flame_pepper.png/40px-Flame_pepper.png?40787c", loc:"Lava Caves (61–79)", r:""},
+      {n:"Hot Potato", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hot_potato.png/40px-Hot_potato.png?cd9343", loc:"Lava Caves (61–79)", r:""},
+      {n:"Lava Chestnuts", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lava_chestnuts.png/40px-Lava_chestnuts.png?cb398c", loc:"Lava Caves (61–79)", r:""},
+    ]},
+    {name:"Ruins Forage Set", season:['all'], items:[
+      {n:"Written Root", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Spell Fruit", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Ethereal Grass", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Essence Blossom", loc:"Ancient Ruins (81–99)", r:""},
+      {n:"Chirping Fern", loc:"Ancient Ruins (81–99)", r:""},
+    ]},
+    {name:"Void Forage Set", season:['all'], items:[
+      {n:"Void Pearl", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Herb", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Powder", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Void Stone", loc:"Qualquer andar sem selo (requer Void Sight)", r:""},
+      {n:"Voidite", loc:"Ancient Ruins (81–99), quebrando aglomerados de Voidite (requer Void Sight)", r:""},
+    ]},
+  ]},
+  insetos: { label: "🦋 Insetos", sets: [
+    {name:"Multi-Season Insect Set", season:['all'], items:[
+      {n:"Ant", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ant.png/40px-Ant.png?ed4cf8", pt:"Formiga", loc:"Mundo aberto", r:"common", season:['sp','su','fa']},
+      {n:"Bumblebee", img:"https://fieldsofmistria.wiki.gg/images/thumb/Bumblebee.png/40px-Bumblebee.png?f001c1", pt:"Mamangava", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Fuzzy Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fuzzy_moth.png/40px-Fuzzy_moth.png?afb946", loc:"Mundo aberto, noite", r:"uncommon"},
+      {n:"Hummingbird Hawk Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hummingbird_hawk_moth.png/40px-Hummingbird_hawk_moth.png?8e3c10", loc:"Mundo aberto", r:"rare", season:['sp','su','fa']},
+      {n:"Praying Mantis", img:"https://fieldsofmistria.wiki.gg/images/thumb/Praying_mantis.png/40px-Praying_mantis.png?67d1d7", pt:"Louva-a-deus", loc:"Mundo aberto, dia", r:"common"},
+    ]},
+    {name:"Spring Insect Set", season:['sp'], items:[
+      {n:"Butterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Butterfly.png/40px-Butterfly.png?538c53", pt:"Borboleta", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Caterpillar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Caterpillar.png/40px-Caterpillar.png?ccb8dd", pt:"Lagarta", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Ladybug", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ladybug.png/40px-Ladybug.png?a79482", pt:"Joaninha", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Luna Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Luna_moth.png/40px-Luna_moth.png?5766de", loc:"Mundo aberto, noite", r:"rare"},
+      {n:"Roly Poly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Roly_poly.png/40px-Roly_poly.png?6383d5", pt:"Tatuzinho", loc:"Mundo aberto, o dia todo", r:"uncommon"},
+    ]},
+    {name:"Summer Insect Set", season:['su'], items:[
+      {n:"Cicada", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cicada.png/40px-Cicada.png?e05797", pt:"Cigarra", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Cricket", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cricket.png/40px-Cricket.png?736195", pt:"Grilo", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Dragonfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragonfly.png/40px-Dragonfly.png?55f3be", pt:"Libélula", loc:"Mundo aberto, dia", r:"uncommon", weather:['🌧 Chuva'], wtags:['rain']},
+      {n:"Firefly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Firefly.png/40px-Firefly.png?ef3c15", pt:"Vaga-lume", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Sand Bug", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sand_bug.png/40px-Sand_bug.png?f5b238", loc:"The Beach, o dia todo", r:"common"},
+    ]},
+    {name:"Fall Insect Set", season:['fa'], items:[
+      {n:"Cicada Nymph", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cicada_nymph.png/40px-Cicada_nymph.png?77fd7c", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Inchworm", img:"https://fieldsofmistria.wiki.gg/images/thumb/Inchworm.png/40px-Inchworm.png?ed963b", loc:"Mundo aberto, o dia todo", r:"common"},
+      {n:"Monarch Butterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Monarch_butterfly.png/40px-Monarch_butterfly.png?55fe6f", loc:"Mundo aberto, dia", r:"common", weather:['🍃 Vento'], wtags:['wind']},
+      {n:"Tiger Swallowtail Butterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tiger_swallowtail_butterfly.png/40px-Tiger_swallowtail_butterfly.png?5f5c37", loc:"Mundo aberto, dia", r:"uncommon", weather:['🍃 Vento'], wtags:['wind']},
+      {n:"Walking Leaf", img:"https://fieldsofmistria.wiki.gg/images/thumb/Walking_leaf.png/40px-Walking_leaf.png?451fa5", loc:"Mundo aberto, dia", r:"uncommon"},
+    ]},
+    {name:"Winter Insect Set", season:['wi'], items:[
+      {n:"Brightbulb Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Brightbulb_moth.png/40px-Brightbulb_moth.png?4204bd", loc:"Mundo aberto, noite", r:"common"},
+      {n:"Crystal Caterpillar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystal_caterpillar.png/40px-Crystal_caterpillar.png?ad66f8", loc:"Mundo aberto", r:"rare", weather:['❄️ Neve/Nevasca'], wtags:['snow']},
+      {n:"Frost Flutter Butterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Frost_flutter_butterfly.png/40px-Frost_flutter_butterfly.png?a56676", loc:"Mundo aberto, dia", r:"common"},
+      {n:"Walking Stick", img:"https://fieldsofmistria.wiki.gg/images/thumb/Walking_stick.png/40px-Walking_stick.png?991388", pt:"Bicho-pau", loc:"Mundo aberto, o dia todo", r:"uncommon"},
+      {n:"Winterpillar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Winterpillar.png/40px-Winterpillar.png?89268f", loc:"Mundo aberto, o dia todo", r:"common"},
+    ]},
+    {name:"Bee Insect Set", season:['all'], items:[
+      {n:"Big Bee", loc:"Mundo aberto, dia", r:"uncommon", season:['sp','su','fa']},
+      {n:"Flower Bee", loc:"Mundo aberto, dia", r:"rare"},
+      {n:"Fur Bee", loc:"Mundo aberto, dia", r:"common", season:['wi']},
+      {n:"Moonlight Bee", loc:"Mundo aberto, noite", r:"rare"},
+      {n:"Sweet Bee", loc:"Mundo aberto, dia", r:"uncommon"},
+    ]},
+    {name:"Bug Pheromone Insect Set", season:['all'], items:[
+      {n:"Ant Queen", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ant_queen.png/40px-Ant_queen.png?130305", loc:"Mundo aberto (requer Bug Pheromones)", r:"common"},
+      {n:"Biggest Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Biggest_beetle.png/40px-Biggest_beetle.png?f293f1", loc:"Requer Bug Pheromones", r:"veryrare"},
+      {n:"Queen's Birdwing", img:"https://fieldsofmistria.wiki.gg/images/thumb/Queen%27s_birdwing.png/40px-Queen%27s_birdwing.png?47c853", loc:"Requer Bug Pheromones", r:"rare"},
+      {n:"Saint Mantis", img:"https://fieldsofmistria.wiki.gg/images/thumb/Saint_mantis.png/40px-Saint_mantis.png?5cf9bc", loc:"Requer Bug Pheromones", r:"uncommon"},
+      {n:"Sunset Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sunset_moth.png/40px-Sunset_moth.png?f2b1b0", loc:"Requer Bug Pheromones", r:"common"},
+    ]},
+    {name:"Rare Insect Set", season:['all'], items:[
+      {n:"Jewel Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Jewel_beetle.png/40px-Jewel_beetle.png?a0d188", loc:"Mundo aberto", r:"rare", season:['su']},
+      {n:"Lightning Dragonfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lightning_dragonfly.png/40px-Lightning_dragonfly.png?382178", loc:"Mundo aberto", r:"rare", season:['sp','su','fa'], weather:['⛈ Tempestade'], wtags:['storm']},
+      {n:"Magma Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Magma_beetle.png/40px-Magma_beetle.png?22c295", loc:"Mundo aberto", r:"rare", season:['su']},
+      {n:"Mistmoth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mistmoth.png/40px-Mistmoth.png?88e8fd", loc:"Mundo aberto, noite", r:"rare", season:['fa']},
+      {n:"Orchid Mantis", img:"https://fieldsofmistria.wiki.gg/images/thumb/Orchid_mantis.png/40px-Orchid_mantis.png?a94f65", loc:"Mundo aberto, dia", r:"rare", season:['sp']},
+    ]},
+    {name:"Legendary Insect Set", season:['all'], items:[
+      {n:"Fairy Bee", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fairy_bee.png/40px-Fairy_bee.png?41b5b8", loc:"Mundo aberto", r:"legendary", season:['fa']},
+      {n:"Flower Crown Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Flower_crown_beetle.png/40px-Flower_crown_beetle.png?79b197", loc:"Mundo aberto", r:"legendary", season:['sp']},
+      {n:"Snowball Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Snowball_beetle.png/40px-Snowball_beetle.png?a35e4e", loc:"Mundo aberto", r:"legendary", season:['wi'], weather:['❄️ Nevasca'], wtags:['snow']},
+      {n:"Speedy Snail", img:"https://fieldsofmistria.wiki.gg/images/thumb/Speedy_snail.png/40px-Speedy_snail.png?d7deda", loc:"Mundo aberto", r:"legendary", season:['sp','su','fa']},
+      {n:"Strobe Firefly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Strobe_firefly.png/40px-Strobe_firefly.png?81f6ae", loc:"Mundo aberto", r:"legendary", season:['su']},
+    ]},
+    {name:"Upper Mines Insect Set", season:['all'], items:[
+      {n:"Copper Nugget Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Copper_nugget_beetle.png/40px-Copper_nugget_beetle.png?d016cc", loc:"Upper Mines (1–19)", r:"uncommon"},
+      {n:"Lantern Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lantern_moth.png/40px-Lantern_moth.png?e75541", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Mine Cricket", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mine_cricket.png/40px-Mine_cricket.png?508901", loc:"Upper Mines (1–19)", r:"rare"},
+      {n:"Tunnel Millipede", img:"https://fieldsofmistria.wiki.gg/images/thumb/Tunnel_millipede.png/40px-Tunnel_millipede.png?3df806", loc:"Upper Mines (1–19)", r:"common"},
+      {n:"Worm", img:"https://fieldsofmistria.wiki.gg/images/thumb/Worm.png/40px-Worm.png?caf317", pt:"Minhoca", loc:"Upper Mines (1–19)", r:"common"},
+    ]},
+    {name:"Tide Caverns Insect Set", season:['all'], items:[
+      {n:"Coral Mantis", img:"https://fieldsofmistria.wiki.gg/images/thumb/Coral_mantis.png/40px-Coral_mantis.png?bcdb69", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Hermit Snail", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hermit_snail.png/40px-Hermit_snail.png?688569", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Puddle Spider", img:"https://fieldsofmistria.wiki.gg/images/thumb/Puddle_spider.png/40px-Puddle_spider.png?cc0204", loc:"Tide Caverns (21–39)", r:"rare"},
+      {n:"Sea Scarab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Sea_scarab.png/40px-Sea_scarab.png?2cba3f", loc:"Tide Caverns (21–39)", r:"uncommon"},
+      {n:"Waterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Waterfly.png/40px-Waterfly.png?f14013", loc:"Tide Caverns (21–39)", r:"common"},
+    ]},
+    {name:"Deep Earth Insect Set", season:['all'], items:[
+      {n:"Crystal Wing Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystal_wing_moth.png/40px-Crystal_wing_moth.png?26cc34", loc:"Deep Earth (41–59)", r:"rare"},
+      {n:"Crystalline Cricket", img:"https://fieldsofmistria.wiki.gg/images/thumb/Crystalline_cricket.png/40px-Crystalline_cricket.png?fe8c15", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Deep Earthworm", img:"https://fieldsofmistria.wiki.gg/images/thumb/Deep_earthworm.png/40px-Deep_earthworm.png?129edb", loc:"Deep Earth (41–59)", r:"common"},
+      {n:"Gem Shard Caterpillar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Gem_shard_caterpillar.png/40px-Gem_shard_caterpillar.png?142ccf", loc:"Deep Earth (41–59)", r:"uncommon"},
+      {n:"Rock Roach", img:"https://fieldsofmistria.wiki.gg/images/thumb/Rock_roach.png/40px-Rock_roach.png?fe76c2", loc:"Deep Earth (41–59)", r:"uncommon"},
+    ]},
+    {name:"Lava Caves Insect Set", season:['all'], items:[
+      {n:"Fire Wasp", img:"https://fieldsofmistria.wiki.gg/images/thumb/Fire_wasp.png/40px-Fire_wasp.png?3836a4", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Cooktop Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Cooktop_beetle.png/40px-Cooktop_beetle.png?60fd24", loc:"Lava Caves (61–79)", r:"common"},
+      {n:"Lava Snail", img:"https://fieldsofmistria.wiki.gg/images/thumb/Lava_snail.png/40px-Lava_snail.png?e73ca5", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Smoke Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Smoke_moth.png/40px-Smoke_moth.png?8de6da", loc:"Lava Caves (61–79)", r:"uncommon"},
+      {n:"Diamond Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Diamond_beetle.png/40px-Diamond_beetle.png?955a72", loc:"Lava Caves (61–79)", r:"rare"},
+    ]},
+    {name:"Ruins Insect Set", season:['all'], items:[
+      {n:"Ancient Firefly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Ancient_firefly.png/40px-Ancient_firefly.png?e05136", loc:"Ancient Ruins (81–99)", r:"common"},
+      {n:"Giant Worm", img:"https://fieldsofmistria.wiki.gg/images/thumb/Giant_worm.png/40px-Giant_worm.png?b590f4", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Hidden Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hidden_beetle.png/40px-Hidden_beetle.png?380042", loc:"Ancient Ruins (81–99)", r:"rare"},
+      {n:"Parchment Moth", img:"https://fieldsofmistria.wiki.gg/images/thumb/Parchment_moth.png/40px-Parchment_moth.png?525d1d", loc:"Ancient Ruins (81–99)", r:"uncommon"},
+      {n:"Void Snail", img:"https://fieldsofmistria.wiki.gg/images/thumb/Void_snail.png/40px-Void_snail.png?b41bfb", loc:"Ancient Ruins (81–99)", r:"common"},
+    ]},
+    {name:"Grass Insect Set", season:['all'], items:[
+      {n:"Grasshopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Grasshopper.png/40px-Grasshopper.png?dc10f2", pt:"Gafanhoto", loc:"Mundo aberto, o dia todo", r:"common", season:['sp','su','fa']},
+      {n:"Icehopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Icehopper.png/40px-Icehopper.png?e5be42", loc:"Mundo aberto", r:"", season:['wi']},
+      {n:"Leafhopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Leafhopper.png/40px-Leafhopper.png?2fc4fb", loc:"Mundo aberto", r:"", season:['fa']},
+      {n:"Petalhopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Petalhopper.png/40px-Petalhopper.png?4ef853", loc:"Mundo aberto, dia", r:"", season:['sp']},
+      {n:"Strawhopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Strawhopper.png/40px-Strawhopper.png?778ea1", loc:"Mundo aberto, o dia todo", r:"", season:['su']},
+    ]},
+    {name:"Beach Insect Set", season:['all'], items:[
+      {n:"Beach Hopper", img:"https://fieldsofmistria.wiki.gg/images/thumb/Beach_hopper.png/40px-Beach_hopper.png?99b6be", loc:"The Beach, o dia todo", r:"common"},
+      {n:"Hermit Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Hermit_crab.png/40px-Hermit_crab.png?bb4645", loc:"The Beach", r:"common"},
+      {n:"Relic Crab", img:"https://fieldsofmistria.wiki.gg/images/thumb/Relic_crab.png/40px-Relic_crab.png?d0819d", loc:"The Beach", r:"uncommon"},
+      {n:"Surf Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Surf_beetle.png/40px-Surf_beetle.png?946dfd", loc:"The Beach", r:"common"},
+      {n:"Waterbug", img:"https://fieldsofmistria.wiki.gg/images/thumb/Waterbug.png/40px-Waterbug.png?a861e4", loc:"The Beach", r:"common"},
+    ]},
+    {name:"Deep Woods Insect Set", season:['all'], items:[
+      {n:"Windleaf Butterfly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Windleaf_butterfly.png/40px-Windleaf_butterfly.png?51782f", loc:"The Deep Woods, dia", r:"common"},
+      {n:"Mote Firefly", img:"https://fieldsofmistria.wiki.gg/images/thumb/Mote_firefly.png/40px-Mote_firefly.png?509241", loc:"The Deep Woods, noite", r:"common"},
+      {n:"Dragon Horn Beetle", img:"https://fieldsofmistria.wiki.gg/images/thumb/Dragon_horn_beetle.png/40px-Dragon_horn_beetle.png?3292fd", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Loam Caterpillar", img:"https://fieldsofmistria.wiki.gg/images/thumb/Loam_caterpillar.png/40px-Loam_caterpillar.png?de5ce7", loc:"The Deep Woods", r:"uncommon"},
+      {n:"Singing Katydid", img:"https://fieldsofmistria.wiki.gg/images/thumb/Singing_katydid.png/40px-Singing_katydid.png?dfc28a", loc:"The Deep Woods", r:"rare"},
+    ]},
+  ]},
+};
+
+// ---------- state ----------
+let state = { checked:{}, favorites:{}, notes:{}, objectives:[] };
+
+let stateLoaded = false;
+let storageBroken = false;   // true só se NEM window.storage NEM localStorage funcionarem
+let usingLocalFallback = false; // true se estiver salvando via localStorage do navegador (funciona bem!)
+const STORAGE_KEY = 'museu-app-state';
+
+async function storageGetRaw(){
+  // tenta primeiro o window.storage (nuvem da Anthropic, ideal dentro do app oficial)
+  try {
+    const result = await window.storage.get(STORAGE_KEY, false);
+    return { ok:true, value: result ? result.value : null, method:'cloud' };
+  } catch(e){
+    // se falhar, tenta o localStorage do navegador (funciona quando o arquivo é aberto fora do preview do app)
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      return { ok:true, value:v, method:'local' };
+    } catch(e2){
+      return { ok:false, value:null, method:'none' };
+    }
+  }
+}
+async function storageSetRaw(jsonStr){
+  try {
+    const result = await window.storage.set(STORAGE_KEY, jsonStr, false);
+    if (!result) throw new Error('sem confirmação do storage');
+    return { ok:true, method:'cloud' };
+  } catch(e){
+    try {
+      localStorage.setItem(STORAGE_KEY, jsonStr);
+      return { ok:true, method:'local' };
+    } catch(e2){
+      return { ok:false, method:'none' };
+    }
+  }
+}
+
+async function loadState(){
+  const res = await storageGetRaw();
+  if (res.ok && res.value){
+    try {
+      const parsed = JSON.parse(res.value);
+      state = Object.assign({checked:{}, favorites:{}, notes:{}, objectives:[]}, parsed);
+      if (state.lang) lang = (state.lang === 'half') ? 'pt' : state.lang;
+    } catch(e){ /* JSON inválido salvo antes — mantém estado padrão */ }
+  }
+  usingLocalFallback = (res.method === 'local');
+  storageBroken = !res.ok;
+  stateLoaded = true;
+  render();
+}
+async function saveState(){
+  if (!stateLoaded) return; // evita salvar um estado "em branco" por cima do que ainda está carregando
+  const res = await storageSetRaw(JSON.stringify(state));
+  const wasLocal = usingLocalFallback, wasBroken = storageBroken;
+  usingLocalFallback = (res.method === 'local');
+  storageBroken = !res.ok;
+  if (usingLocalFallback !== wasLocal || storageBroken !== wasBroken){
+    if (storageBroken) console.warn('Autosave indisponível: nem o storage do app nem o localStorage do navegador funcionaram aqui.');
+    render();
+  }
+}
+
+let currentWing = 'arqueologia';
+let searchTerm = '';
+let seasonFilter = 'all';
+let weatherFilter = 'all';
+let showOnlyPending = false;
+let showOnlyFavs = false;
+const openSets = {};
+
+function itemId(wing, si, ii){ return wing + '__' + si + '__' + ii; }
+
+function itemSeasons(set, item){
+  return item.season || set.season || ['all'];
+}
+
+function rarityLabel(r){
+  const map = {common:'Common', uncommon:'Uncommon', rare:'Rare', legendary:'Legendary', veryrare:'Very Rare'};
+  return map[r] || r || '';
+}
+
+function wingProgress(wingKey){
+  let total=0, done=0;
+  DATA[wingKey].sets.forEach((set,si)=>{
+    set.items.forEach((it,ii)=>{ total++; if(state.checked[itemId(wingKey,si,ii)]) done++; });
+  });
+  return {total, done};
+}
+function allProgress(){
+  let total=0, done=0;
+  Object.keys(DATA).forEach(w=>{ const c=wingProgress(w); total+=c.total; done+=c.done; });
+  return {total, done};
+}
+
+function wikiUrl(name){
+  const clean = name.replace(/'/g,'%27').replace(/ /g,'_');
+  return 'https://fieldsofmistria.wiki.gg/wiki/' + clean;
+}
+
+// ---------- render: tabs ----------
+function renderTabs(){
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  Object.keys(DATA).forEach(key=>{
+    const c = wingProgress(key);
+    const btn = document.createElement('div');
+    btn.className = 'tab' + (key===currentWing ? ' active':'');
+    btn.textContent = trWingLabel(DATA[key].label) + ' (' + c.done + '/' + c.total + ')';
+    btn.onclick = ()=>{ currentWing = key; render(); };
+    el.appendChild(btn);
+  });
+}
+
+// ---------- render: season filters ----------
+function renderSeasonFilters(){
+  const el = document.getElementById('season-filters');
+  el.innerHTML = '';
+  SEASON_ORDER.forEach(s=>{
+    const btn = document.createElement('div');
+    btn.className = 'chip-btn' + (seasonFilter===s ? ' active':'');
+    btn.textContent = lang==='en' ? SEASON_LABEL_EN[s] : SEASON_LABEL[s];
+    btn.onclick = ()=>{ seasonFilter = s; render(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderWeatherFilters(){
+  const el = document.getElementById('weather-filters');
+  el.innerHTML = '';
+  WEATHER_ORDER.forEach(w=>{
+    const btn = document.createElement('div');
+    btn.className = 'chip-btn' + (weatherFilter===w ? ' active':'');
+    btn.textContent = lang==='en' ? WEATHER_LABEL_EN[w] : WEATHER_LABEL[w];
+    btn.onclick = ()=>{ weatherFilter = w; render(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderToggles(){
+  const p = document.getElementById('toggle-pending');
+  p.className = 'toggle-btn' + (showOnlyPending ? ' on':'');
+  p.textContent = (showOnlyPending ? '☑' : '☐') + ' ' + t('togglePending');
+  p.onclick = ()=>{ showOnlyPending = !showOnlyPending; render(); };
+
+  const f = document.getElementById('toggle-favs');
+  f.className = 'toggle-btn' + (showOnlyFavs ? ' on':'');
+  f.textContent = (showOnlyFavs ? '⭐' : '☆') + ' ' + t('toggleFavs');
+  f.onclick = ()=>{ showOnlyFavs = !showOnlyFavs; render(); };
+}
+
+// ---------- render: progress ----------
+function renderProgress(){
+  const c = allProgress();
+  document.getElementById('progress-count').textContent = c.done + ' / ' + c.total;
+  const pct = c.total ? Math.round((c.done/c.total)*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = t('progressLabel') + ' (' + pct + '%)';
+
+  const catEl = document.getElementById('cat-stats');
+  catEl.innerHTML = '';
+  Object.keys(DATA).forEach(key=>{
+    const c2 = wingProgress(key);
+    const pct2 = c2.total ? Math.round((c2.done/c2.total)*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'cat-stat-row';
+    row.innerHTML = '<div class="cat-stat-name">' + DATA[key].label + '</div>' +
+      '<div class="cat-stat-bar-bg"><div class="cat-stat-bar-fill" style="width:' + pct2 + '%"></div></div>' +
+      '<div class="cat-stat-pct">' + pct2 + '%</div>';
+    catEl.appendChild(row);
+  });
+}
+
+// ---------- render: objectives ----------
+function renderObjectives(){
+  const panel = document.getElementById('objectives-panel');
+  panel.innerHTML = '';
+  const h = document.createElement('h3');
+  h.textContent = t('objectivesTitle');
+  panel.appendChild(h);
+
+  const list = document.createElement('ul');
+  list.className = 'obj-list';
+  if (state.objectives.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'note';
+    empty.textContent = t('objectivesEmpty');
+    list.appendChild(empty);
+  }
+  state.objectives.forEach((obj, idx)=>{
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.style.flex = '1';
+    span.textContent = obj;
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.onclick = ()=>{ state.objectives.splice(idx,1); saveState(); render(); };
+    li.appendChild(span);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+  panel.appendChild(list);
+
+  const row = document.createElement('div');
+  row.className = 'obj-input-row';
+  const input = document.createElement('input');
+  input.placeholder = t('objInputPlaceholder');
+  input.id = 'new-obj-input';
+  const addBtn = document.createElement('button');
+  addBtn.textContent = t('addBtn');
+  addBtn.onclick = ()=>{
+    const v = input.value.trim();
+    if (v){ state.objectives.push(v); saveState(); render(); }
+  };
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ addBtn.click(); } });
+  row.appendChild(input);
+  row.appendChild(addBtn);
+  panel.appendChild(row);
+}
+
+// ---------- render: content ----------
+function itemMatchesSearch(set, item, term){
+  if (!term) return true;
+  const hay = [
+    item.n, item.pt||'', item.loc||'', rarityLabel(item.r), set.name,
+    (itemSeasons(set,item)||[]).map(s=>SEASON_LABEL[s]).join(' '),
+    (item.weather||[]).join(' ')
+  ].join(' ').toLowerCase();
+  return hay.includes(term);
+}
+
+function itemMatchesSeason(set, item){
+  if (seasonFilter === 'all') return true;
+  const seasons = itemSeasons(set, item);
+  return seasons.includes('all') || seasons.includes(seasonFilter);
+}
+
+function itemMatchesWeather(item){
+  if (weatherFilter === 'all') return true;
+  return !!(item.wtags && item.wtags.includes(weatherFilter));
+}
+
+function renderContent(){
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const wing = DATA[currentWing];
+  const term = searchTerm.trim().toLowerCase();
+  let anySetShown = false;
+
+  wing.sets.forEach((set, si)=>{
+    const visibleItems = set.items.filter((it, ii)=>{
+      const id = itemId(currentWing, si, ii);
+      if (showOnlyPending && state.checked[id]) return false;
+      if (showOnlyFavs && !state.favorites[id]) return false;
+      if (!itemMatchesSeason(set, it)) return false;
+      if (!itemMatchesWeather(it)) return false;
+      if (!itemMatchesSearch(set, it, term)) return false;
+      return true;
+    });
+
+    if (visibleItems.length === 0 && set.items.length > 0) return;
+    if (set.items.length === 0 && (showOnlyPending || showOnlyFavs || seasonFilter!=='all' || weatherFilter!=='all' || term)) return;
+
+    anySetShown = true;
+    const doneCount = set.items.filter((it,ii)=>state.checked[itemId(currentWing,si,ii)]).length;
+    const isComplete = set.items.length>0 && doneCount === set.items.length;
+    const key = currentWing + '_' + si;
+    const isOpen = openSets[key] || !!term;
+
+    const card = document.createElement('div');
+    card.className = 'set-card' + (isComplete ? ' complete' : '');
+
+    const header = document.createElement('div');
+    header.className = 'set-header' + (isComplete ? ' complete-bg' : '');
+
+    const titleSpan = document.createElement('span');
+    titleSpan.innerHTML = trSetName(set.name) + (isComplete ? '<span class="complete-badge">' + t('completeBadge') + '</span>' : '');
+
+    const countSpan = document.createElement('span');
+    countSpan.className = 'count';
+    countSpan.textContent = doneCount + '/' + set.items.length;
+
+    header.appendChild(titleSpan);
+    header.appendChild(countSpan);
+    header.onclick = ()=>{ openSets[key] = !openSets[key]; render(); };
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'set-body' + (isOpen ? ' open' : '');
+
+    if (set.items.length > 0){
+      const allChecked = set.items.every((it2,ii2)=>state.checked[itemId(currentWing,si,ii2)]);
+      const noneChecked = set.items.every((it2,ii2)=>!state.checked[itemId(currentWing,si,ii2)]);
+      const selectAllRow = document.createElement('div');
+      selectAllRow.className = 'select-all-row';
+      const selectAllCb = document.createElement('input');
+      selectAllCb.type = 'checkbox';
+      selectAllCb.checked = allChecked;
+      selectAllCb.indeterminate = !allChecked && !noneChecked;
+      selectAllCb.onchange = ()=>{
+        const newVal = selectAllCb.checked;
+        set.items.forEach((it2, ii2)=>{ state.checked[itemId(currentWing, si, ii2)] = newVal; });
+        saveState(); render();
+      };
+      const selectAllLabel = document.createElement('span');
+      selectAllLabel.textContent = t('selectAllLabel');
+      selectAllRow.appendChild(selectAllCb);
+      selectAllRow.appendChild(selectAllLabel);
+      body.appendChild(selectAllRow);
+    }
+
+    if (set.note){
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = '⚠️ ' + trFreeText(set.note);
+      body.appendChild(note);
+    }
+
+    if (set.items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'note';
+      empty.textContent = t('noItemsYet');
+      body.appendChild(empty);
+    }
+
+    set.items.forEach((it, ii)=>{
+      const id = itemId(currentWing, si, ii);
+      if (showOnlyPending && state.checked[id]) return;
+      if (showOnlyFavs && !state.favorites[id]) return;
+      if (!itemMatchesSeason(set, it)) return;
+      if (!itemMatchesWeather(it)) return;
+      if (!itemMatchesSearch(set, it, term)) return;
+
+      const isChecked = !!state.checked[id];
+      const isFav = !!state.favorites[id];
+
+      const row = document.createElement('div');
+      row.className = 'item-row';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = isChecked;
+      cb.onchange = ()=>{ state.checked[id] = cb.checked; saveState(); render(); };
+      row.appendChild(cb);
+
+      const main = document.createElement('div');
+      main.className = 'item-main';
+
+      const topLine = document.createElement('div');
+      topLine.className = 'item-top-line';
+
+      if (it.img){
+        const img = document.createElement('img');
+        img.className = 'item-icon';
+        img.src = it.img;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.onerror = function(){ this.style.display = 'none'; };
+        topLine.appendChild(img);
+      }
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'item-name' + (isChecked ? ' done' : '');
+      nameSpan.textContent = trItemName(it);
+      topLine.appendChild(nameSpan);
+
+      const favBtn = document.createElement('button');
+      favBtn.className = 'fav-btn';
+      favBtn.textContent = isFav ? '⭐' : '☆';
+      favBtn.onclick = ()=>{ state.favorites[id] = !isFav; saveState(); render(); };
+      topLine.appendChild(favBtn);
+      main.appendChild(topLine);
+
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+      const seasons = itemSeasons(set, it);
+      seasons.forEach(s=>{
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = lang==='en' ? SEASON_LABEL_EN[s] : SEASON_LABEL[s];
+        chips.appendChild(c);
+      });
+      if (it.loc){
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = '📍 ' + trFreeText(it.loc);
+        chips.appendChild(c);
+      }
+      (it.weather||[]).forEach(w=>{
+        const c = document.createElement('span');
+        c.className = 'chip';
+        c.textContent = trFreeText(w);
+        chips.appendChild(c);
+      });
+      if (it.r){
+        const c = document.createElement('span');
+        c.className = 'chip badge-rarity badge-' + it.r;
+        c.textContent = rarityLabel(it.r);
+        chips.appendChild(c);
+      }
+      main.appendChild(chips);
+
+      const actions = document.createElement('div');
+      actions.className = 'item-actions';
+      const link = document.createElement('a');
+      link.className = 'wiki-link';
+      link.href = wikiUrl(it.n);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = t('wikiLink');
+      actions.appendChild(link);
+
+      const addObjBtn = document.createElement('button');
+      addObjBtn.className = 'add-obj-btn';
+      addObjBtn.textContent = t('addObjBtn');
+      addObjBtn.onclick = ()=>{
+        state.objectives.push(t('donatePrefix') + it.n);
+        saveState(); render();
+      };
+      actions.appendChild(addObjBtn);
+      main.appendChild(actions);
+
+      const noteInput = document.createElement('input');
+      noteInput.className = 'note-input';
+      noteInput.placeholder = t('notePlaceholder');
+      noteInput.value = state.notes[id] || '';
+      noteInput.addEventListener('change', ()=>{
+        state.notes[id] = noteInput.value;
+        saveState();
+      });
+      main.appendChild(noteInput);
+
+      row.appendChild(main);
+      body.appendChild(row);
+    });
+
+    card.appendChild(body);
+    content.appendChild(card);
+  });
+
+  if (!anySetShown){
+    const empty = document.createElement('div');
+    empty.className = 'empty-msg';
+    empty.textContent = t('noResults');
+    content.appendChild(empty);
+  }
+}
+
+function renderStaticUI(){
+  document.getElementById('app-title').textContent = t('title');
+  document.getElementById('app-subtitle').textContent = t('subtitle');
+  document.getElementById('search').placeholder = t('searchPlaceholder');
+  document.getElementById('btn-export').textContent = t('exportBtn');
+  document.querySelector('label[for="import-file"]').textContent = t('importBtn');
+  document.querySelectorAll('#lang-switch .lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+  });
+  const warnEl = document.getElementById('storage-warning');
+  warnEl.classList.toggle('show', storageBroken || usingLocalFallback);
+  warnEl.classList.toggle('info', !storageBroken && usingLocalFallback);
+  if (storageBroken){
+    warnEl.innerHTML = t('storageBrokenMsg');
+  } else if (usingLocalFallback){
+    warnEl.innerHTML = t('storageLocalMsg');
+  }
+}
+
+function render(){
+  renderStaticUI();
+  renderTabs();
+  renderSeasonFilters();
+  renderWeatherFilters();
+  renderToggles();
+  renderProgress();
+  renderObjectives();
+  renderContent();
+}
+
+document.querySelectorAll('#lang-switch .lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    lang = btn.getAttribute('data-lang');
+    state.lang = lang;
+    saveState();
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  render();
+});
+
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'museu-mistria-progresso.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-file').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      state = Object.assign({checked:{}, favorites:{}, notes:{}, objectives:[]}, parsed);
+      saveState();
+      render();
+      alert(t('importSuccess'));
+    } catch(err){
+      alert(t('importError'));
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+loadState();
+</script>
+</body>
+</html>
